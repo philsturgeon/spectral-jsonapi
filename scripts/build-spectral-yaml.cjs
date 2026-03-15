@@ -46,7 +46,9 @@ const formatNameByMeta = new Map(
 
 function normalize(value, atPath = "$") {
   if (Array.isArray(value)) {
-    return value.map((nested, index) => normalize(nested, `${atPath}[${index}]`));
+    return value.map((nested, index) =>
+      normalize(nested, `${atPath}[${index}]`),
+    );
   }
 
   if (typeof value === "function") {
@@ -59,7 +61,9 @@ function normalize(value, atPath = "$") {
       return value.name;
     }
 
-    const formatName = formatNameByMeta.get(value.name) || formatNameByMeta.get(value.displayName);
+    const formatName =
+      formatNameByMeta.get(value.name) ||
+      formatNameByMeta.get(value.displayName);
     if (formatName) {
       return formatName;
     }
@@ -99,4 +103,6 @@ const generatedHeader = [
 ].join("\n");
 
 fs.writeFileSync(outputPath, generatedHeader + yaml, "utf8");
-console.log(`Generated ${path.relative(repoRoot, outputPath)} from dist/ruleset.js`);
+console.log(
+  `Generated ${path.relative(repoRoot, outputPath)} from dist/ruleset.js`,
+);

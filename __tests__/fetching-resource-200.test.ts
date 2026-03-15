@@ -37,7 +37,7 @@ testRule("fetching-resource-200", [
     },
     errors: [
       {
-        message: "GET paths must support response code: 200",
+        message: "GET operations must define a 200 response.",
         path: ["paths", "/tickets/{id}", "get", "responses"],
         severity: DiagnosticSeverity.Error,
       },

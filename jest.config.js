@@ -3,7 +3,7 @@ module.exports = async () => {
     testPathIgnorePatterns: ["__helpers__"],
     testEnvironment: "node",
     transform: {
-      "^.+\\.[tj]s$": ["ts-jest", {}]
+      "^.+\\.[tj]s$": ["ts-jest", {}],
     },
   };
 };

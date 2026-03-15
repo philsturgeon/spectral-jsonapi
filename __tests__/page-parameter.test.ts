@@ -1,0 +1,60 @@
+import testRule from "./__helpers__/helper";
+import { base } from "./__helpers__/fixtures";
+
+testRule("page-parameter", [
+  {
+    name: "page uses deepObject but invalid member types",
+    document: {
+      ...base,
+      paths: {
+        "/articles": {
+          get: {
+            parameters: [
+              {
+                name: "page",
+                in: "query",
+                style: "deepObject",
+                schema: {
+                  type: "object",
+                  properties: {
+                    limit: { type: "string" },
+                  },
+                },
+              },
+            ],
+            responses: { "200": { description: "ok" } },
+          },
+        },
+      },
+    },
+    errors: [{}],
+  },
+  {
+    name: "cursor pagination shape passes",
+    document: {
+      ...base,
+      paths: {
+        "/articles": {
+          get: {
+            parameters: [
+              {
+                name: "page",
+                in: "query",
+                style: "deepObject",
+                schema: {
+                  type: "object",
+                  properties: {
+                    cursor: { type: "string" },
+                    limit: { type: "integer", format: "int32" },
+                  },
+                },
+              },
+            ],
+            responses: { "200": { description: "ok" } },
+          },
+        },
+      },
+    },
+    errors: [],
+  },
+]);

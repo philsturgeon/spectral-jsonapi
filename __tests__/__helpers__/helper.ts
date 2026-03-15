@@ -22,7 +22,7 @@ type Scenario = ReadonlyArray<
 export default (ruleName: RuleName, tests: Scenario): void => {
   describe(`Rule ${String(ruleName)}`, () => {
     const concurrent = tests.every(
-      (test) => test.mocks === void 0 || Object.keys(test.mocks).length === 0
+      (test) => test.mocks === void 0 || Object.keys(test.mocks).length === 0,
     );
 
     for (const testCase of tests) {
@@ -36,8 +36,8 @@ export default (ruleName: RuleName, tests: Scenario): void => {
 
         expect(errors.filter(({ code }) => code === ruleName)).toEqual(
           testCase.errors.map(
-            (error) => expect.objectContaining(error) as unknown
-          )
+            (error) => expect.objectContaining(error) as unknown,
+          ),
         );
       });
     }
@@ -50,9 +50,9 @@ export function createWithRules(rules: (keyof Ruleset["rules"])[]): Spectral {
     (jsonApiRuleset as unknown as { default?: RulesetDefinition }).default ??
     (jsonApiRuleset as unknown as RulesetDefinition);
 
-  const baseRules =
-    ((baseRuleset as unknown as { rules?: Record<string, unknown> }).rules ??
-      {}) as Record<string, unknown>;
+  const baseRules = ((
+    baseRuleset as unknown as { rules?: Record<string, unknown> }
+  ).rules ?? {}) as Record<string, unknown>;
 
   const selectedRules = rules.reduce((obj: Record<string, unknown>, name) => {
     const key = String(name);

@@ -37,7 +37,7 @@ testRule("fetching-resource-404", [
     },
     errors: [
       {
-        message: "GET paths for single resources must support response code: 404",
+        message: "Single-resource GET operations must define a 404 response.",
         path: ["paths", "/tickets/{id}", "get", "responses"],
         severity: DiagnosticSeverity.Error,
       },
