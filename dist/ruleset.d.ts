@@ -25,9 +25,9 @@ declare const _default: {
             given: string[];
             then: {
                 field: string;
-                function: _stoplight_spectral_core.RulesetFunctionWithValidator<string | number | boolean | null, _stoplight_spectral_functions.EnumerationOptions>;
+                function: _stoplight_spectral_core.RulesetFunctionWithValidator<string, _stoplight_spectral_functions.PatternOptions>;
                 functionOptions: {
-                    values: string[];
+                    match: string;
                 };
             };
         };
@@ -77,7 +77,6 @@ declare const _default: {
                 field: string;
                 function: _stoplight_spectral_core.RulesetFunctionWithValidator<unknown, _stoplight_spectral_functions.SchemaOptions>;
                 functionOptions: {
-                    dialect: string;
                     schema: {
                         type: string;
                         anyOf: {
