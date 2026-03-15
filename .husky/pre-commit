@@ -1,2 +1,5 @@
-npm test;
-npm run build;
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+npm run build
+npm test
