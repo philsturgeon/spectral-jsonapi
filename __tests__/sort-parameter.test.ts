@@ -1,12 +1,9 @@
 import { DiagnosticSeverity } from "@stoplight/types";
 import testRule from "./__helpers__/helper";
+import { base } from "./__helpers__/fixtures";
 
 const invalidDocument = {
-  openapi: "3.1.0",
-  info: {
-    title: "Test",
-    version: "1.0.0",
-  },
+  ...base,
   paths: {
     "/articles": {
       get: {
