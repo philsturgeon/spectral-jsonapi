@@ -1,37 +1,44 @@
 import { DiagnosticSeverity } from "@stoplight/types";
 import { createWithRules, expectRuleErrors } from "./__helpers__/helper";
+import { openApiBase } from "./__helpers__/fixtures";
 
-const invalidDocument = {
-  openapi: "3.1.0",
-  info: {
-    title: "Test",
-    version: "1.0.0",
-  },
-  paths: {
-    "/articles/{id}": {
-      get: {
-        responses: {
-          "200": {
-            description: "ok",
-            content: {
-              "application/vnd.api+json": {
-                schema: {
-                  type: "object",
-                  properties: {
-                    data: {
+describe("Rule resource-object-reserved-fields", () => {
+  let spectral = createWithRules(["resource-object-reserved-fields"]);
+
+  beforeEach(() => {
+    spectral = createWithRules(["resource-object-reserved-fields"]);
+  });
+
+  it("attributes contains reserved id", async () => {
+    const document = {
+      ...openApiBase,
+      paths: {
+        "/articles/{id}": {
+          get: {
+            responses: {
+              "200": {
+                description: "ok",
+                content: {
+                  "application/vnd.api+json": {
+                    schema: {
                       type: "object",
                       properties: {
-                        id: {
-                          type: "string",
-                        },
-                        type: {
-                          type: "string",
-                        },
-                        attributes: {
+                        data: {
                           type: "object",
                           properties: {
                             id: {
                               type: "string",
+                            },
+                            type: {
+                              type: "string",
+                            },
+                            attributes: {
+                              type: "object",
+                              properties: {
+                                id: {
+                                  type: "string",
+                                },
+                              },
                             },
                           },
                         },
@@ -44,27 +51,12 @@ const invalidDocument = {
           },
         },
       },
-    },
-  },
-};
+    };
 
-const validDocument = structuredClone(invalidDocument);
-delete validDocument.paths["/articles/{id}"].get.responses["200"].content[
-  "application/vnd.api+json"
-].schema.properties.data.properties.attributes.properties.id;
-
-describe("Rule resource-object-reserved-fields", () => {
-  let spectral = createWithRules(["resource-object-reserved-fields"]);
-
-  beforeEach(() => {
-    spectral = createWithRules(["resource-object-reserved-fields"]);
-  });
-
-  it("attributes contains reserved id", async () => {
     await expectRuleErrors(
       spectral,
       "resource-object-reserved-fields",
-      invalidDocument,
+      document,
       [
         {
           message:
@@ -92,10 +84,49 @@ describe("Rule resource-object-reserved-fields", () => {
   });
 
   it("valid resource-object-reserved-fields case", async () => {
+    const document = {
+      ...openApiBase,
+      paths: {
+        "/articles/{id}": {
+          get: {
+            responses: {
+              "200": {
+                description: "ok",
+                content: {
+                  "application/vnd.api+json": {
+                    schema: {
+                      type: "object",
+                      properties: {
+                        data: {
+                          type: "object",
+                          properties: {
+                            id: {
+                              type: "string",
+                            },
+                            type: {
+                              type: "string",
+                            },
+                            attributes: {
+                              type: "object",
+                              properties: {},
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    };
+
     await expectRuleErrors(
       spectral,
       "resource-object-reserved-fields",
-      validDocument,
+      document,
       [],
     );
   });

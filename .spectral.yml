@@ -31,7 +31,6 @@ aliases:
     - "#AllContentSchemas..properties[meta]"
   Relationships:
     - "#AllContentSchemas..properties[relationships]"
-    - "#AllContentSchemas..allOf[*].properties[relationships]"
   RelationshipData:
     - "#Relationships..data"
   POSTRelationships:
@@ -394,10 +393,205 @@ rules:
     documentationUrl: https://jsonapi.org/format/1.1/#document-resource-objects
     message: Resource objects should include an id property.
     severity: 1
-    given: "#ResourceObjects"
+    resolved: true
+    given:
+      - $.paths..responses..content[application/vnd.api+json].schema.properties.data
+      - $.paths..responses..content[application/vnd.api+json].schema.properties.data.items
+      - $.paths..content[application/vnd.api+json].schema.properties.included.items
     then:
-      field: id
-      function: truthy
+      function: schema
+      functionOptions:
+        dialect: draft2020-12
+        schema:
+          anyOf:
+            - anyOf:
+                - type: object
+                  required:
+                    - properties
+                  properties:
+                    properties:
+                      type: object
+                      required:
+                        - id
+                - type: object
+                  required:
+                    - allOf
+                  properties:
+                    allOf:
+                      type: array
+                      minItems: 1
+                      contains:
+                        type: object
+                        required:
+                          - properties
+                        properties:
+                          properties:
+                            type: object
+                            required:
+                              - id
+            - type: object
+              required:
+                - items
+              properties:
+                items:
+                  anyOf:
+                    - anyOf:
+                        - type: object
+                          required:
+                            - properties
+                          properties:
+                            properties:
+                              type: object
+                              required:
+                                - id
+                        - type: object
+                          required:
+                            - allOf
+                          properties:
+                            allOf:
+                              type: array
+                              minItems: 1
+                              contains:
+                                type: object
+                                required:
+                                  - properties
+                                properties:
+                                  properties:
+                                    type: object
+                                    required:
+                                      - id
+                    - type: object
+                      required:
+                        - anyOf
+                      properties:
+                        anyOf:
+                          type: array
+                          minItems: 1
+                          items:
+                            anyOf:
+                              - type: object
+                                required:
+                                  - properties
+                                properties:
+                                  properties:
+                                    type: object
+                                    required:
+                                      - id
+                              - type: object
+                                required:
+                                  - allOf
+                                properties:
+                                  allOf:
+                                    type: array
+                                    minItems: 1
+                                    contains:
+                                      type: object
+                                      required:
+                                        - properties
+                                      properties:
+                                        properties:
+                                          type: object
+                                          required:
+                                            - id
+                    - type: object
+                      required:
+                        - oneOf
+                      properties:
+                        oneOf:
+                          type: array
+                          minItems: 1
+                          items:
+                            anyOf:
+                              - type: object
+                                required:
+                                  - properties
+                                properties:
+                                  properties:
+                                    type: object
+                                    required:
+                                      - id
+                              - type: object
+                                required:
+                                  - allOf
+                                properties:
+                                  allOf:
+                                    type: array
+                                    minItems: 1
+                                    contains:
+                                      type: object
+                                      required:
+                                        - properties
+                                      properties:
+                                        properties:
+                                          type: object
+                                          required:
+                                            - id
+            - type: object
+              required:
+                - anyOf
+              properties:
+                anyOf:
+                  type: array
+                  minItems: 1
+                  items:
+                    anyOf:
+                      - type: object
+                        required:
+                          - properties
+                        properties:
+                          properties:
+                            type: object
+                            required:
+                              - id
+                      - type: object
+                        required:
+                          - allOf
+                        properties:
+                          allOf:
+                            type: array
+                            minItems: 1
+                            contains:
+                              type: object
+                              required:
+                                - properties
+                              properties:
+                                properties:
+                                  type: object
+                                  required:
+                                    - id
+            - type: object
+              required:
+                - oneOf
+              properties:
+                oneOf:
+                  type: array
+                  minItems: 1
+                  items:
+                    anyOf:
+                      - type: object
+                        required:
+                          - properties
+                        properties:
+                          properties:
+                            type: object
+                            required:
+                              - id
+                      - type: object
+                        required:
+                          - allOf
+                        properties:
+                          allOf:
+                            type: array
+                            minItems: 1
+                            contains:
+                              type: object
+                              required:
+                                - properties
+                              properties:
+                                properties:
+                                  type: object
+                                  required:
+                                    - id
   resource-object-property-types:
     description: |-
       `id` and `type` **MUST** be of type `string`
@@ -740,61 +934,187 @@ rules:
     severity: 0
     given: "#Relationships.properties[*]"
     then:
-      - field: type
-        function: enumeration
-        functionOptions:
-          values:
-            - object
-      - field: properties
-        function: schema
-        functionOptions:
-          dialect: draft2020-12
-          schema:
-            type: object
-            anyOf:
-              - required:
-                  - links
-              - required:
-                  - data
-              - required:
-                  - meta
-            properties:
-              links:
-                type: object
+      function: schema
+      functionOptions:
+        dialect: draft2020-12
+        schema:
+          type: object
+          anyOf:
+            - required:
+                - properties
+              properties:
+                type:
+                  anyOf:
+                    - type: string
+                      enum:
+                        - object
+                    - type: array
+                      minItems: 1
+                      items:
+                        type: string
+                        enum:
+                          - object
                 properties:
-                  type:
-                    type: string
-                    enum:
-                      - object
+                  type: object
+                  anyOf:
+                    - required:
+                        - links
+                    - required:
+                        - data
+                    - required:
+                        - meta
                   properties:
+                    links:
+                      type: object
+                      properties:
+                        type:
+                          anyOf:
+                            - type: string
+                              enum:
+                                - object
+                            - type: array
+                              minItems: 1
+                              items:
+                                type: string
+                                enum:
+                                  - object
+                        properties:
+                          type: object
+                          anyOf:
+                            - required:
+                                - self
+                            - required:
+                                - related
+                          properties:
+                            self:
+                              type: object
+                            related:
+                              type: object
+                    data:
+                      type: object
+                      anyOf:
+                        - properties:
+                            type:
+                              type: string
+                              enum:
+                                - object
+                                - array
+                                - "null"
+                        - properties:
+                            type:
+                              type: array
+                              minItems: 1
+                              items:
+                                type: string
+                                enum:
+                                  - object
+                                  - array
+                                  - "null"
+                        - properties:
+                            oneOf:
+                              type: array
+                              minItems: 1
+                    meta:
+                      type: object
+                      properties:
+                        type:
+                          anyOf:
+                            - type: string
+                              enum:
+                                - object
+                            - type: array
+                              minItems: 1
+                              items:
+                                type: string
+                                enum:
+                                  - object
+                  additionalProperties: false
+            - required:
+                - allOf
+              properties:
+                allOf:
+                  type: array
+                  minItems: 1
+                  contains:
                     type: object
-                    anyOf:
-                      - required:
-                          - self
-                      - required:
-                          - related
+                    required:
+                      - properties
                     properties:
-                      self:
+                      properties:
                         type: object
-                      related:
-                        type: object
-              data:
-                type: object
-                properties:
-                  type:
-                    type: string
-                    enum:
-                      - object
-                      - array
-                      - "null"
-              meta:
-                type: object
-                properties:
-                  type:
-                    type: string
-                    enum:
-                      - object
-            additionalProperties: false
+                        anyOf:
+                          - required:
+                              - links
+                          - required:
+                              - data
+                          - required:
+                              - meta
+                        properties:
+                          links:
+                            type: object
+                            properties:
+                              type:
+                                anyOf:
+                                  - type: string
+                                    enum:
+                                      - object
+                                  - type: array
+                                    minItems: 1
+                                    items:
+                                      type: string
+                                      enum:
+                                        - object
+                              properties:
+                                type: object
+                                anyOf:
+                                  - required:
+                                      - self
+                                  - required:
+                                      - related
+                                properties:
+                                  self:
+                                    type: object
+                                  related:
+                                    type: object
+                          data:
+                            type: object
+                            anyOf:
+                              - properties:
+                                  type:
+                                    type: string
+                                    enum:
+                                      - object
+                                      - array
+                                      - "null"
+                              - properties:
+                                  type:
+                                    type: array
+                                    minItems: 1
+                                    items:
+                                      type: string
+                                      enum:
+                                        - object
+                                        - array
+                                        - "null"
+                              - properties:
+                                  oneOf:
+                                    type: array
+                                    minItems: 1
+                          meta:
+                            type: object
+                            properties:
+                              type:
+                                anyOf:
+                                  - type: string
+                                    enum:
+                                      - object
+                                  - type: array
+                                    minItems: 1
+                                    items:
+                                      type: string
+                                      enum:
+                                        - object
+                        additionalProperties: false
   relationship-data-properties:
     description: |-
       relationship `data` **MAY** only contain: `id`, `type` and `meta`
@@ -907,32 +1227,109 @@ rules:
       functionOptions:
         dialect: draft2020-12
         schema:
-          type: object
-          required:
-            - id
-            - type
-          properties:
-            id:
-              type: object
+          anyOf:
+            - type: object
+              properties:
+                id:
+                  type: object
+                  properties:
+                    type:
+                      anyOf:
+                        - type: string
+                          enum:
+                            - string
+                        - type: array
+                          minItems: 1
+                          items:
+                            type: string
+                            enum:
+                              - string
+                type:
+                  type: object
+                  properties:
+                    type:
+                      anyOf:
+                        - type: string
+                          enum:
+                            - string
+                        - type: array
+                          minItems: 1
+                          items:
+                            type: string
+                            enum:
+                              - string
+                meta:
+                  type: object
+                  properties:
+                    type:
+                      anyOf:
+                        - type: string
+                          enum:
+                            - object
+                        - type: array
+                          minItems: 1
+                          items:
+                            type: string
+                            enum:
+                              - object
+            - type: object
               properties:
                 type:
-                  type: string
-                  enum:
-                    - string
-            type:
-              type: object
-              properties:
-                type:
-                  type: string
-                  enum:
-                    - string
-            meta:
-              type: object
-              properties:
-                type:
-                  type: string
-                  enum:
-                    - object
+                  anyOf:
+                    - type: string
+                      enum:
+                        - array
+                    - type: array
+                      minItems: 1
+                      items:
+                        type: string
+                        enum:
+                          - array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: object
+                      properties:
+                        type:
+                          anyOf:
+                            - type: string
+                              enum:
+                                - string
+                            - type: array
+                              minItems: 1
+                              items:
+                                type: string
+                                enum:
+                                  - string
+                    type:
+                      type: object
+                      properties:
+                        type:
+                          anyOf:
+                            - type: string
+                              enum:
+                                - string
+                            - type: array
+                              minItems: 1
+                              items:
+                                type: string
+                                enum:
+                                  - string
+                    meta:
+                      type: object
+                      properties:
+                        type:
+                          anyOf:
+                            - type: string
+                              enum:
+                                - object
+                            - type: array
+                              minItems: 1
+                              items:
+                                type: string
+                                enum:
+                                  - object
   meta-object:
     description: |-
       `meta` property **MUST** be of type `object`
@@ -1145,7 +1542,7 @@ rules:
         functionOptions:
           values:
             - string
-  fetching-resource-200:
+  get-200-response-code:
     description: |-
       `GET` requests **MUST** support response code 200
 
@@ -1179,7 +1576,7 @@ rules:
     then:
       field: "200"
       function: truthy
-  fetching-resource-404:
+  get-404-response-code:
     description: |-
       `GET` requests to single resource endpoints **MUST** support response code 404
 
@@ -1214,7 +1611,7 @@ rules:
     documentationUrl: https://jsonapi.org/format/1.1/#fetching-resources-responses
     message: Single-resource GET operations must define a 404 response.
     severity: 0
-    given: $.paths[*][get].responses
+    given: $.paths[?(@property.match(/{[^}]+}/))][get].responses
     then:
       field: "404"
       function: truthy
@@ -1673,11 +2070,11 @@ rules:
       function: defined
   post-201-response:
     description: |-
-      A POST 201 response **MUST** return the primary resource
+      A POST 201 response **MUST** return a document that contains the resource as primary data.
 
       Related specification information can be found [here](https://jsonapi.org/format/1.1/#crud-creating-responses).
     documentationUrl: https://jsonapi.org/format/1.1/#crud-creating-responses
-    message: POST 201 responses should include primary resource data.
+    message: POST 201 responses should include primary resource data using keys data, meta, jsonapi, or links.
     severity: 2
     given: $.paths[*][post].responses.201.content[application/vnd.api+json].schema
     then:
@@ -1688,14 +2085,11 @@ rules:
           type: array
           items:
             type: string
-            anyOf:
-              - enum:
-                  - data
-              - enum:
-                  - data
-                  - meta
-                  - jsonapi
-                  - links
+            enum:
+              - data
+              - meta
+              - jsonapi
+              - links
   post-2xx-response-codes:
     description: |-
       `POST` requests **MUST** support one Of the following 2xx codes: 201, 202 or 204
@@ -1801,6 +2195,7 @@ rules:
       # Example showing use of source in error object.
 
       type: array
+      maxItems:1
       items:
           type: object
           properties:
@@ -1808,12 +2203,10 @@ rules:
               type: string
             status:
               type: string
-              enum:
-                - 409
+              const: 409
             title:
               type: string
-              enum:
-                - Conflict
+              const: Conflict
             source:
               type: object
               properties:
@@ -1826,17 +2219,16 @@ rules:
                       items:
                         type: string
                         format: json-pointer
-      maxItems:1
       ```
 
       Related specification information can be found [here](https://jsonapi.org/format/1.1/#crud-creating-responses).
     documentationUrl: https://jsonapi.org/format/1.1/#crud-creating-responses
     message: POST 409 responses should include source to explain the conflict.
     severity: 2
-    given: $.paths[*][post].responses
+    given: $.paths[*][post].responses[409].content['application/vnd.api+json'].schema.properties
     then:
-      field: "409"
-      function: falsy
+      field: source
+      function: truthy
   put-disallowed:
     description: |-
       `PUT` verb is not allowed in jsonapi, use `PATCH` instead.

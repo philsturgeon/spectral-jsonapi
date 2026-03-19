@@ -1,17 +1,17 @@
 import { DiagnosticSeverity } from "@stoplight/types";
 import { createWithRules, expectRuleErrors } from "./__helpers__/helper";
 
-describe("Rule fetching-resource-200", () => {
-  let spectral = createWithRules(["fetching-resource-200"]);
+describe("Rule get-200-response-code", () => {
+  let spectral = createWithRules(["get-200-response-code"]);
 
   beforeEach(() => {
-    spectral = createWithRules(["fetching-resource-200"]);
+    spectral = createWithRules(["get-200-response-code"]);
   });
 
   it("valid get includes 200", async () => {
     await expectRuleErrors(
       spectral,
-      "fetching-resource-200",
+      "get-200-response-code",
       {
         openapi: "3.1.0",
         info: { title: "Test", version: "1.0.0" },
@@ -33,7 +33,7 @@ describe("Rule fetching-resource-200", () => {
   it("invalid get missing 200", async () => {
     await expectRuleErrors(
       spectral,
-      "fetching-resource-200",
+      "get-200-response-code",
       {
         openapi: "3.1.0",
         info: { title: "Test", version: "1.0.0" },

@@ -1,34 +1,6 @@
 import { DiagnosticSeverity } from "@stoplight/types";
 import { createWithRules, expectRuleErrors } from "./__helpers__/helper";
-
-const invalidDocument = {
-  openapi: "3.1.0",
-  info: {
-    title: "Test",
-    version: "1.0.0",
-  },
-  paths: {
-    "/articles/{id}": {
-      put: {
-        responses: {
-          "200": {
-            description: "ok",
-          },
-        },
-      },
-    },
-  },
-};
-
-const validDocument = structuredClone(invalidDocument);
-delete validDocument.paths["/articles/{id}"].put;
-validDocument.paths["/articles/{id}"].patch = {
-  responses: {
-    "200": {
-      description: "ok",
-    },
-  },
-};
+import { openApiBase } from "./__helpers__/fixtures";
 
 describe("Rule put-disallowed", () => {
   let spectral = createWithRules(["put-disallowed"]);
@@ -38,7 +10,22 @@ describe("Rule put-disallowed", () => {
   });
 
   it("put operation is present", async () => {
-    await expectRuleErrors(spectral, "put-disallowed", invalidDocument, [
+    const document = {
+      ...openApiBase,
+      paths: {
+        "/articles/{id}": {
+          put: {
+            responses: {
+              "200": {
+                description: "ok",
+              },
+            },
+          },
+        },
+      },
+    };
+
+    await expectRuleErrors(spectral, "put-disallowed", document, [
       {
         message: "PUT is not allowed by JSON:API; use PATCH.",
         path: ["paths", "/articles/{id}", "put"],
@@ -48,6 +35,21 @@ describe("Rule put-disallowed", () => {
   });
 
   it("valid put-disallowed case", async () => {
-    await expectRuleErrors(spectral, "put-disallowed", validDocument, []);
+    const document = {
+      ...openApiBase,
+      paths: {
+        "/articles/{id}": {
+          patch: {
+            responses: {
+              "200": {
+                description: "ok",
+              },
+            },
+          },
+        },
+      },
+    };
+
+    await expectRuleErrors(spectral, "put-disallowed", document, []);
   });
 });

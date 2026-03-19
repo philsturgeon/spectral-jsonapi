@@ -1,5 +1,6 @@
 import { DiagnosticSeverity } from "@stoplight/types";
 import { createWithRules, expectRuleErrors } from "./__helpers__/helper";
+import { openApiBase } from "./__helpers__/fixtures";
 
 describe("Rule 201-response-location-header", () => {
   let spectral = createWithRules(["201-response-location-header"]);
@@ -10,11 +11,7 @@ describe("Rule 201-response-location-header", () => {
 
   it("201 response omits Location header", async () => {
     const document = {
-      openapi: "3.1.0",
-      info: {
-        title: "Test",
-        version: "1.0.0",
-      },
+      ...openApiBase,
       paths: {
         "/articles": {
           post: {
@@ -40,11 +37,7 @@ describe("Rule 201-response-location-header", () => {
 
   it("valid 201-response-location-header case", async () => {
     const document = {
-      openapi: "3.1.0",
-      info: {
-        title: "Test",
-        version: "1.0.0",
-      },
+      ...openApiBase,
       paths: {
         "/articles": {
           post: {

@@ -1,20 +1,22 @@
 import { DiagnosticSeverity } from "@stoplight/types";
 import { createWithRules, expectRuleErrors } from "./__helpers__/helper";
+import { openApiBase } from "./__helpers__/fixtures";
 
-describe("Rule fetching-resource-404", () => {
-  let spectral = createWithRules(["fetching-resource-404"]);
+// TODO make a get-404-response that returns a single response
+
+describe("Rule get-404-response-code", () => {
+  let spectral: any;
 
   beforeEach(() => {
-    spectral = createWithRules(["fetching-resource-404"]);
+    spectral = createWithRules(["get-404-response-code"]);
   });
 
-  it("valid get includes 404", async () => {
+  it("will return no error when theres a 404 response", async () => {
     await expectRuleErrors(
       spectral,
-      "fetching-resource-404",
+      "get-404-response-code",
       {
-        openapi: "3.1.0",
-        info: { title: "Test", version: "1.0.0" },
+        ...openApiBase,
         paths: {
           "/tickets/{id}": {
             get: {
@@ -30,13 +32,32 @@ describe("Rule fetching-resource-404", () => {
     );
   });
 
-  it("invalid get missing 404", async () => {
+  it("assumes any URL without a parameter is probably not a single-resource GET so does not need a 404", async () => {
     await expectRuleErrors(
       spectral,
-      "fetching-resource-404",
+      "get-404-response-code",
       {
-        openapi: "3.1.0",
-        info: { title: "Test", version: "1.0.0" },
+        ...openApiBase,
+        paths: {
+          "/tickets": {
+            get: {
+              responses: {
+                "200": { description: "ok" },
+              },
+            },
+          },
+        },
+      },
+      [],
+    );
+  });
+
+  it("returns errors when GET is missing 404", async () => {
+    await expectRuleErrors(
+      spectral,
+      "get-404-response-code",
+      {
+        ...openApiBase,
         paths: {
           "/tickets/{id}": {
             get: {

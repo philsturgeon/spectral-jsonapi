@@ -1,6 +1,6 @@
 import { DiagnosticSeverity } from "@stoplight/types";
 import { createWithRules, expectRuleErrors } from "./__helpers__/helper";
-import { base } from "./__helpers__/fixtures";
+import { openApiBase } from "./__helpers__/fixtures";
 
 describe("Rule page-parameter", () => {
   let spectral = createWithRules(["page-parameter"]);
@@ -14,7 +14,7 @@ describe("Rule page-parameter", () => {
       spectral,
       "page-parameter",
       {
-        ...base,
+        ...openApiBase,
         paths: {
           "/articles": {
             get: {
@@ -62,7 +62,7 @@ describe("Rule page-parameter", () => {
       spectral,
       "page-parameter",
       {
-        ...base,
+        ...openApiBase,
         paths: {
           "/articles": {
             get: {

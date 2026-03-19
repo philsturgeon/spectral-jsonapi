@@ -1,44 +1,6 @@
 import { DiagnosticSeverity } from "@stoplight/types";
 import { createWithRules, expectRuleErrors } from "./__helpers__/helper";
-
-const invalidDocument = {
-  openapi: "3.1.0",
-  info: {
-    title: "Test",
-    version: "1.0.0",
-  },
-  paths: {
-    "/articles": {
-      post: {
-        requestBody: {
-          content: {
-            "application/vnd.api+json": {
-              schema: {
-                type: "object",
-                properties: {
-                  data: {
-                    type: "object",
-                  },
-                },
-              },
-            },
-          },
-        },
-        responses: {
-          "201": {
-            description: "created",
-          },
-          "409": {
-            description: "conflict",
-          },
-        },
-      },
-    },
-  },
-};
-
-const validDocument = structuredClone(invalidDocument);
-delete validDocument.paths["/articles"].post.responses["409"];
+import { openApiBase } from "./__helpers__/fixtures";
 
 describe("Rule post-409-response", () => {
   let spectral = createWithRules(["post-409-response"]);
@@ -47,18 +9,86 @@ describe("Rule post-409-response", () => {
     spectral = createWithRules(["post-409-response"]);
   });
 
-  it("post includes explicit 409 response", async () => {
-    await expectRuleErrors(spectral, "post-409-response", invalidDocument, [
+  it("invalid: 409 response does not define a source", async () => {
+    const document = {
+      ...openApiBase,
+      paths: {
+        "/articles": {
+          post: {
+            responses: {
+              "409": {
+                description: "conflict",
+                content: {
+                  "application/vnd.api+json": {
+                    schema: {
+                      type: "object",
+                      properties: {
+                        nonsense: {},
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    };
+
+    await expectRuleErrors(spectral, "post-409-response", document, [
       {
         message:
           "POST 409 responses should include source to explain the conflict.",
-        path: ["paths", "/articles", "post", "responses", "409"],
+        path: [
+          "paths",
+          "/articles",
+          "post",
+          "responses",
+          "409",
+          "content",
+          "application/vnd.api+json",
+          "schema",
+          "properties",
+        ],
         severity: DiagnosticSeverity.Information,
       },
     ]);
   });
 
-  it("valid post-409-response case", async () => {
-    await expectRuleErrors(spectral, "post-409-response", validDocument, []);
+  it("valid: JSON response shows source of conflict", async () => {
+    const document = {
+      ...openApiBase,
+      paths: {
+        "/articles": {
+          post: {
+            responses: {
+              "409": {
+                description: "conflict",
+                content: {
+                  "application/vnd.api+json": {
+                    schema: {
+                      type: "object",
+                      properties: {
+                        source: {
+                          type: "object",
+                          properties: {
+                            pointer: {
+                              type: "string",
+                              format: "json-pointer",
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    };
+
+    await expectRuleErrors(spectral, "post-409-response", document, []);
   });
 });

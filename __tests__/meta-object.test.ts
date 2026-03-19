@@ -1,41 +1,6 @@
 import { DiagnosticSeverity } from "@stoplight/types";
 import { createWithRules, expectRuleErrors } from "./__helpers__/helper";
-
-const invalidDocument = {
-  openapi: "3.1.0",
-  info: {
-    title: "Test",
-    version: "1.0.0",
-  },
-  paths: {
-    "/articles/{id}": {
-      get: {
-        responses: {
-          "200": {
-            description: "ok",
-            content: {
-              "application/vnd.api+json": {
-                schema: {
-                  type: "object",
-                  properties: {
-                    meta: {
-                      type: "string",
-                    },
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
-    },
-  },
-};
-
-const validDocument = structuredClone(invalidDocument);
-validDocument.paths["/articles/{id}"].get.responses["200"].content[
-  "application/vnd.api+json"
-].schema.properties.meta.type = "object";
+import { openApiBase } from "./__helpers__/fixtures";
 
 describe("Rule meta-object", () => {
   let spectral = createWithRules(["meta-object"]);
@@ -45,7 +10,34 @@ describe("Rule meta-object", () => {
   });
 
   it("meta is typed as string", async () => {
-    await expectRuleErrors(spectral, "meta-object", invalidDocument, [
+    const document = {
+      ...openApiBase,
+      paths: {
+        "/articles/{id}": {
+          get: {
+            responses: {
+              "200": {
+                description: "ok",
+                content: {
+                  "application/vnd.api+json": {
+                    schema: {
+                      type: "object",
+                      properties: {
+                        meta: {
+                          type: "string",
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    };
+
+    await expectRuleErrors(spectral, "meta-object", document, [
       {
         message: "meta must be an object.",
         path: [
@@ -67,6 +59,33 @@ describe("Rule meta-object", () => {
   });
 
   it("valid meta-object case", async () => {
-    await expectRuleErrors(spectral, "meta-object", validDocument, []);
+    const document = {
+      ...openApiBase,
+      paths: {
+        "/articles/{id}": {
+          get: {
+            responses: {
+              "200": {
+                description: "ok",
+                content: {
+                  "application/vnd.api+json": {
+                    schema: {
+                      type: "object",
+                      properties: {
+                        meta: {
+                          type: "object",
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    };
+
+    await expectRuleErrors(spectral, "meta-object", document, []);
   });
 });

@@ -174,10 +174,264 @@ declare const _default: {
             documentationUrl: string;
             message: string;
             severity: DiagnosticSeverity;
-            given: string;
+            resolved: boolean;
+            given: string[];
             then: {
-                field: string;
-                function: _stoplight_spectral_core.RulesetFunctionWithValidator<unknown, null>;
+                function: _stoplight_spectral_core.RulesetFunctionWithValidator<unknown, _stoplight_spectral_functions.SchemaOptions>;
+                functionOptions: {
+                    dialect: string;
+                    schema: {
+                        anyOf: ({
+                            anyOf: ({
+                                type: string;
+                                required: string[];
+                                properties: {
+                                    properties: {
+                                        type: string;
+                                        required: string[];
+                                    };
+                                    allOf?: undefined;
+                                };
+                            } | {
+                                type: string;
+                                required: string[];
+                                properties: {
+                                    allOf: {
+                                        type: string;
+                                        minItems: number;
+                                        contains: {
+                                            type: string;
+                                            required: string[];
+                                            properties: {
+                                                properties: {
+                                                    type: string;
+                                                    required: string[];
+                                                };
+                                            };
+                                        };
+                                    };
+                                    properties?: undefined;
+                                };
+                            })[];
+                        } | {
+                            type: string;
+                            required: string[];
+                            properties: {
+                                items: {
+                                    anyOf: ({
+                                        anyOf: ({
+                                            type: string;
+                                            required: string[];
+                                            properties: {
+                                                properties: {
+                                                    type: string;
+                                                    required: string[];
+                                                };
+                                                allOf?: undefined;
+                                            };
+                                        } | {
+                                            type: string;
+                                            required: string[];
+                                            properties: {
+                                                allOf: {
+                                                    type: string;
+                                                    minItems: number;
+                                                    contains: {
+                                                        type: string;
+                                                        required: string[];
+                                                        properties: {
+                                                            properties: {
+                                                                type: string;
+                                                                required: string[];
+                                                            };
+                                                        };
+                                                    };
+                                                };
+                                                properties?: undefined;
+                                            };
+                                        })[];
+                                    } | {
+                                        type: string;
+                                        required: string[];
+                                        properties: {
+                                            anyOf: {
+                                                type: string;
+                                                minItems: number;
+                                                items: {
+                                                    anyOf: ({
+                                                        type: string;
+                                                        required: string[];
+                                                        properties: {
+                                                            properties: {
+                                                                type: string;
+                                                                required: string[];
+                                                            };
+                                                            allOf?: undefined;
+                                                        };
+                                                    } | {
+                                                        type: string;
+                                                        required: string[];
+                                                        properties: {
+                                                            allOf: {
+                                                                type: string;
+                                                                minItems: number;
+                                                                contains: {
+                                                                    type: string;
+                                                                    required: string[];
+                                                                    properties: {
+                                                                        properties: {
+                                                                            type: string;
+                                                                            required: string[];
+                                                                        };
+                                                                    };
+                                                                };
+                                                            };
+                                                            properties?: undefined;
+                                                        };
+                                                    })[];
+                                                };
+                                            };
+                                            oneOf?: undefined;
+                                        };
+                                    } | {
+                                        type: string;
+                                        required: string[];
+                                        properties: {
+                                            oneOf: {
+                                                type: string;
+                                                minItems: number;
+                                                items: {
+                                                    anyOf: ({
+                                                        type: string;
+                                                        required: string[];
+                                                        properties: {
+                                                            properties: {
+                                                                type: string;
+                                                                required: string[];
+                                                            };
+                                                            allOf?: undefined;
+                                                        };
+                                                    } | {
+                                                        type: string;
+                                                        required: string[];
+                                                        properties: {
+                                                            allOf: {
+                                                                type: string;
+                                                                minItems: number;
+                                                                contains: {
+                                                                    type: string;
+                                                                    required: string[];
+                                                                    properties: {
+                                                                        properties: {
+                                                                            type: string;
+                                                                            required: string[];
+                                                                        };
+                                                                    };
+                                                                };
+                                                            };
+                                                            properties?: undefined;
+                                                        };
+                                                    })[];
+                                                };
+                                            };
+                                            anyOf?: undefined;
+                                        };
+                                    })[];
+                                };
+                                anyOf?: undefined;
+                                oneOf?: undefined;
+                            };
+                        } | {
+                            type: string;
+                            required: string[];
+                            properties: {
+                                anyOf: {
+                                    type: string;
+                                    minItems: number;
+                                    items: {
+                                        anyOf: ({
+                                            type: string;
+                                            required: string[];
+                                            properties: {
+                                                properties: {
+                                                    type: string;
+                                                    required: string[];
+                                                };
+                                                allOf?: undefined;
+                                            };
+                                        } | {
+                                            type: string;
+                                            required: string[];
+                                            properties: {
+                                                allOf: {
+                                                    type: string;
+                                                    minItems: number;
+                                                    contains: {
+                                                        type: string;
+                                                        required: string[];
+                                                        properties: {
+                                                            properties: {
+                                                                type: string;
+                                                                required: string[];
+                                                            };
+                                                        };
+                                                    };
+                                                };
+                                                properties?: undefined;
+                                            };
+                                        })[];
+                                    };
+                                };
+                                items?: undefined;
+                                oneOf?: undefined;
+                            };
+                        } | {
+                            type: string;
+                            required: string[];
+                            properties: {
+                                oneOf: {
+                                    type: string;
+                                    minItems: number;
+                                    items: {
+                                        anyOf: ({
+                                            type: string;
+                                            required: string[];
+                                            properties: {
+                                                properties: {
+                                                    type: string;
+                                                    required: string[];
+                                                };
+                                                allOf?: undefined;
+                                            };
+                                        } | {
+                                            type: string;
+                                            required: string[];
+                                            properties: {
+                                                allOf: {
+                                                    type: string;
+                                                    minItems: number;
+                                                    contains: {
+                                                        type: string;
+                                                        required: string[];
+                                                        properties: {
+                                                            properties: {
+                                                                type: string;
+                                                                required: string[];
+                                                            };
+                                                        };
+                                                    };
+                                                };
+                                                properties?: undefined;
+                                            };
+                                        })[];
+                                    };
+                                };
+                                items?: undefined;
+                                anyOf?: undefined;
+                            };
+                        })[];
+                    };
+                };
             };
         };
         "resource-object-property-types": {
@@ -263,72 +517,253 @@ declare const _default: {
             message: string;
             severity: DiagnosticSeverity;
             given: string;
-            then: ({
-                field: string;
-                function: _stoplight_spectral_core.RulesetFunctionWithValidator<string | number | boolean | null, _stoplight_spectral_functions.EnumerationOptions>;
-                functionOptions: {
-                    values: string[];
-                    dialect?: undefined;
-                    schema?: undefined;
-                };
-            } | {
-                field: string;
+            then: {
                 function: _stoplight_spectral_core.RulesetFunctionWithValidator<unknown, _stoplight_spectral_functions.SchemaOptions>;
                 functionOptions: {
                     dialect: string;
                     schema: {
                         type: string;
-                        anyOf: {
+                        anyOf: ({
                             required: string[];
-                        }[];
-                        properties: {
-                            links: {
-                                type: string;
-                                properties: {
-                                    type: {
+                            properties: {
+                                type: {
+                                    anyOf: ({
                                         type: string;
                                         enum: string[];
-                                    };
-                                    properties: {
+                                        minItems?: undefined;
+                                        items?: undefined;
+                                    } | {
                                         type: string;
-                                        anyOf: {
-                                            required: string[];
-                                        }[];
-                                        properties: {
-                                            self: {
-                                                type: string;
+                                        minItems: number;
+                                        items: {
+                                            type: string;
+                                            enum: string[];
+                                        };
+                                        enum?: undefined;
+                                    })[];
+                                };
+                                properties: {
+                                    type: string;
+                                    anyOf: {
+                                        required: string[];
+                                    }[];
+                                    properties: {
+                                        links: {
+                                            type: string;
+                                            properties: {
+                                                type: {
+                                                    anyOf: ({
+                                                        type: string;
+                                                        enum: string[];
+                                                        minItems?: undefined;
+                                                        items?: undefined;
+                                                    } | {
+                                                        type: string;
+                                                        minItems: number;
+                                                        items: {
+                                                            type: string;
+                                                            enum: string[];
+                                                        };
+                                                        enum?: undefined;
+                                                    })[];
+                                                };
+                                                properties: {
+                                                    type: string;
+                                                    anyOf: {
+                                                        required: string[];
+                                                    }[];
+                                                    properties: {
+                                                        self: {
+                                                            type: string;
+                                                        };
+                                                        related: {
+                                                            type: string;
+                                                        };
+                                                    };
+                                                };
                                             };
-                                            related: {
+                                        };
+                                        data: {
+                                            type: string;
+                                            anyOf: ({
+                                                properties: {
+                                                    type: {
+                                                        type: string;
+                                                        enum: string[];
+                                                        minItems?: undefined;
+                                                        items?: undefined;
+                                                    };
+                                                    oneOf?: undefined;
+                                                };
+                                            } | {
+                                                properties: {
+                                                    type: {
+                                                        type: string;
+                                                        minItems: number;
+                                                        items: {
+                                                            type: string;
+                                                            enum: string[];
+                                                        };
+                                                        enum?: undefined;
+                                                    };
+                                                    oneOf?: undefined;
+                                                };
+                                            } | {
+                                                properties: {
+                                                    oneOf: {
+                                                        type: string;
+                                                        minItems: number;
+                                                    };
+                                                    type?: undefined;
+                                                };
+                                            })[];
+                                        };
+                                        meta: {
+                                            type: string;
+                                            properties: {
+                                                type: {
+                                                    anyOf: ({
+                                                        type: string;
+                                                        enum: string[];
+                                                        minItems?: undefined;
+                                                        items?: undefined;
+                                                    } | {
+                                                        type: string;
+                                                        minItems: number;
+                                                        items: {
+                                                            type: string;
+                                                            enum: string[];
+                                                        };
+                                                        enum?: undefined;
+                                                    })[];
+                                                };
+                                            };
+                                        };
+                                    };
+                                    additionalProperties: boolean;
+                                };
+                                allOf?: undefined;
+                            };
+                        } | {
+                            required: string[];
+                            properties: {
+                                allOf: {
+                                    type: string;
+                                    minItems: number;
+                                    contains: {
+                                        type: string;
+                                        required: string[];
+                                        properties: {
+                                            properties: {
                                                 type: string;
+                                                anyOf: {
+                                                    required: string[];
+                                                }[];
+                                                properties: {
+                                                    links: {
+                                                        type: string;
+                                                        properties: {
+                                                            type: {
+                                                                anyOf: ({
+                                                                    type: string;
+                                                                    enum: string[];
+                                                                    minItems?: undefined;
+                                                                    items?: undefined;
+                                                                } | {
+                                                                    type: string;
+                                                                    minItems: number;
+                                                                    items: {
+                                                                        type: string;
+                                                                        enum: string[];
+                                                                    };
+                                                                    enum?: undefined;
+                                                                })[];
+                                                            };
+                                                            properties: {
+                                                                type: string;
+                                                                anyOf: {
+                                                                    required: string[];
+                                                                }[];
+                                                                properties: {
+                                                                    self: {
+                                                                        type: string;
+                                                                    };
+                                                                    related: {
+                                                                        type: string;
+                                                                    };
+                                                                };
+                                                            };
+                                                        };
+                                                    };
+                                                    data: {
+                                                        type: string;
+                                                        anyOf: ({
+                                                            properties: {
+                                                                type: {
+                                                                    type: string;
+                                                                    enum: string[];
+                                                                    minItems?: undefined;
+                                                                    items?: undefined;
+                                                                };
+                                                                oneOf?: undefined;
+                                                            };
+                                                        } | {
+                                                            properties: {
+                                                                type: {
+                                                                    type: string;
+                                                                    minItems: number;
+                                                                    items: {
+                                                                        type: string;
+                                                                        enum: string[];
+                                                                    };
+                                                                    enum?: undefined;
+                                                                };
+                                                                oneOf?: undefined;
+                                                            };
+                                                        } | {
+                                                            properties: {
+                                                                oneOf: {
+                                                                    type: string;
+                                                                    minItems: number;
+                                                                };
+                                                                type?: undefined;
+                                                            };
+                                                        })[];
+                                                    };
+                                                    meta: {
+                                                        type: string;
+                                                        properties: {
+                                                            type: {
+                                                                anyOf: ({
+                                                                    type: string;
+                                                                    enum: string[];
+                                                                    minItems?: undefined;
+                                                                    items?: undefined;
+                                                                } | {
+                                                                    type: string;
+                                                                    minItems: number;
+                                                                    items: {
+                                                                        type: string;
+                                                                        enum: string[];
+                                                                    };
+                                                                    enum?: undefined;
+                                                                })[];
+                                                            };
+                                                        };
+                                                    };
+                                                };
+                                                additionalProperties: boolean;
                                             };
                                         };
                                     };
                                 };
+                                type?: undefined;
+                                properties?: undefined;
                             };
-                            data: {
-                                type: string;
-                                properties: {
-                                    type: {
-                                        type: string;
-                                        enum: string[];
-                                    };
-                                };
-                            };
-                            meta: {
-                                type: string;
-                                properties: {
-                                    type: {
-                                        type: string;
-                                        enum: string[];
-                                    };
-                                };
-                            };
-                        };
-                        additionalProperties: boolean;
+                        })[];
                     };
-                    values?: undefined;
                 };
-            })[];
+            };
         };
         "relationship-data-properties": {
             description: string;
@@ -355,37 +790,162 @@ declare const _default: {
                 functionOptions: {
                     dialect: string;
                     schema: {
-                        type: string;
-                        required: string[];
-                        properties: {
-                            id: {
-                                type: string;
-                                properties: {
-                                    type: {
-                                        type: string;
-                                        enum: string[];
+                        anyOf: ({
+                            type: string;
+                            properties: {
+                                id: {
+                                    type: string;
+                                    properties: {
+                                        type: {
+                                            anyOf: ({
+                                                type: string;
+                                                enum: string[];
+                                                minItems?: undefined;
+                                                items?: undefined;
+                                            } | {
+                                                type: string;
+                                                minItems: number;
+                                                items: {
+                                                    type: string;
+                                                    enum: string[];
+                                                };
+                                                enum?: undefined;
+                                            })[];
+                                        };
+                                    };
+                                };
+                                type: {
+                                    type: string;
+                                    properties: {
+                                        type: {
+                                            anyOf: ({
+                                                type: string;
+                                                enum: string[];
+                                                minItems?: undefined;
+                                                items?: undefined;
+                                            } | {
+                                                type: string;
+                                                minItems: number;
+                                                items: {
+                                                    type: string;
+                                                    enum: string[];
+                                                };
+                                                enum?: undefined;
+                                            })[];
+                                        };
+                                    };
+                                };
+                                meta: {
+                                    type: string;
+                                    properties: {
+                                        type: {
+                                            anyOf: ({
+                                                type: string;
+                                                enum: string[];
+                                                minItems?: undefined;
+                                                items?: undefined;
+                                            } | {
+                                                type: string;
+                                                minItems: number;
+                                                items: {
+                                                    type: string;
+                                                    enum: string[];
+                                                };
+                                                enum?: undefined;
+                                            })[];
+                                        };
                                     };
                                 };
                             };
-                            type: {
-                                type: string;
-                                properties: {
-                                    type: {
+                        } | {
+                            type: string;
+                            properties: {
+                                type: {
+                                    anyOf: ({
                                         type: string;
                                         enum: string[];
+                                        minItems?: undefined;
+                                        items?: undefined;
+                                    } | {
+                                        type: string;
+                                        minItems: number;
+                                        items: {
+                                            type: string;
+                                            enum: string[];
+                                        };
+                                        enum?: undefined;
+                                    })[];
+                                };
+                                items: {
+                                    type: string;
+                                    properties: {
+                                        id: {
+                                            type: string;
+                                            properties: {
+                                                type: {
+                                                    anyOf: ({
+                                                        type: string;
+                                                        enum: string[];
+                                                        minItems?: undefined;
+                                                        items?: undefined;
+                                                    } | {
+                                                        type: string;
+                                                        minItems: number;
+                                                        items: {
+                                                            type: string;
+                                                            enum: string[];
+                                                        };
+                                                        enum?: undefined;
+                                                    })[];
+                                                };
+                                            };
+                                        };
+                                        type: {
+                                            type: string;
+                                            properties: {
+                                                type: {
+                                                    anyOf: ({
+                                                        type: string;
+                                                        enum: string[];
+                                                        minItems?: undefined;
+                                                        items?: undefined;
+                                                    } | {
+                                                        type: string;
+                                                        minItems: number;
+                                                        items: {
+                                                            type: string;
+                                                            enum: string[];
+                                                        };
+                                                        enum?: undefined;
+                                                    })[];
+                                                };
+                                            };
+                                        };
+                                        meta: {
+                                            type: string;
+                                            properties: {
+                                                type: {
+                                                    anyOf: ({
+                                                        type: string;
+                                                        enum: string[];
+                                                        minItems?: undefined;
+                                                        items?: undefined;
+                                                    } | {
+                                                        type: string;
+                                                        minItems: number;
+                                                        items: {
+                                                            type: string;
+                                                            enum: string[];
+                                                        };
+                                                        enum?: undefined;
+                                                    })[];
+                                                };
+                                            };
+                                        };
                                     };
                                 };
                             };
-                            meta: {
-                                type: string;
-                                properties: {
-                                    type: {
-                                        type: string;
-                                        enum: string[];
-                                    };
-                                };
-                            };
-                        };
+                        })[];
                     };
                 };
             };
@@ -468,7 +1028,7 @@ declare const _default: {
                 functionOptions?: undefined;
             })[];
         };
-        "fetching-resource-200": {
+        "get-200-response-code": {
             description: string;
             documentationUrl: string;
             message: string;
@@ -479,7 +1039,7 @@ declare const _default: {
                 function: _stoplight_spectral_core.RulesetFunctionWithValidator<unknown, null>;
             };
         };
-        "fetching-resource-404": {
+        "get-404-response-code": {
             description: string;
             documentationUrl: string;
             message: string;
@@ -774,9 +1334,7 @@ declare const _default: {
                         type: string;
                         items: {
                             type: string;
-                            anyOf: {
-                                enum: string[];
-                            }[];
+                            enum: string[];
                         };
                     };
                 };

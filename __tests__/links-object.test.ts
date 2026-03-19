@@ -1,41 +1,6 @@
 import { DiagnosticSeverity } from "@stoplight/types";
 import { createWithRules, expectRuleErrors } from "./__helpers__/helper";
-
-const invalidDocument = {
-  openapi: "3.1.0",
-  info: {
-    title: "Test",
-    version: "1.0.0",
-  },
-  paths: {
-    "/articles/{id}": {
-      get: {
-        responses: {
-          "200": {
-            description: "ok",
-            content: {
-              "application/vnd.api+json": {
-                schema: {
-                  type: "object",
-                  properties: {
-                    links: {
-                      type: "array",
-                    },
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
-    },
-  },
-};
-
-const validDocument = structuredClone(invalidDocument);
-validDocument.paths["/articles/{id}"].get.responses["200"].content[
-  "application/vnd.api+json"
-].schema.properties.links.type = "object";
+import { openApiBase } from "./__helpers__/fixtures";
 
 describe("Rule links-object", () => {
   let spectral = createWithRules(["links-object"]);
@@ -45,7 +10,34 @@ describe("Rule links-object", () => {
   });
 
   it("links is typed as array", async () => {
-    await expectRuleErrors(spectral, "links-object", invalidDocument, [
+    const document = {
+      ...openApiBase,
+      paths: {
+        "/articles/{id}": {
+          get: {
+            responses: {
+              "200": {
+                description: "ok",
+                content: {
+                  "application/vnd.api+json": {
+                    schema: {
+                      type: "object",
+                      properties: {
+                        links: {
+                          type: "array",
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    };
+
+    await expectRuleErrors(spectral, "links-object", document, [
       {
         message: "links must be an object.",
         path: [
@@ -67,6 +59,33 @@ describe("Rule links-object", () => {
   });
 
   it("valid links-object case", async () => {
-    await expectRuleErrors(spectral, "links-object", validDocument, []);
+    const document = {
+      ...openApiBase,
+      paths: {
+        "/articles/{id}": {
+          get: {
+            responses: {
+              "200": {
+                description: "ok",
+                content: {
+                  "application/vnd.api+json": {
+                    schema: {
+                      type: "object",
+                      properties: {
+                        links: {
+                          type: "object",
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    };
+
+    await expectRuleErrors(spectral, "links-object", document, []);
   });
 });

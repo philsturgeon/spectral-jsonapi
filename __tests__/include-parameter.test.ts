@@ -1,6 +1,6 @@
 import { DiagnosticSeverity } from "@stoplight/types";
 import { createWithRules, expectRuleErrors } from "./__helpers__/helper";
-import { base } from "./__helpers__/fixtures";
+import { openApiBase } from "./__helpers__/fixtures";
 
 describe("Rule include-parameter", () => {
   let spectral = createWithRules(["include-parameter"]);
@@ -14,7 +14,7 @@ describe("Rule include-parameter", () => {
       spectral,
       "include-parameter",
       {
-        ...base,
+        ...openApiBase,
         paths: {
           "/articles": {
             get: {
@@ -47,7 +47,7 @@ describe("Rule include-parameter", () => {
       spectral,
       "include-parameter",
       {
-        ...base,
+        ...openApiBase,
         paths: {
           "/articles/{id}": {
             get: {

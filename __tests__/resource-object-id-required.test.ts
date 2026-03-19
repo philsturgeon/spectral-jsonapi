@@ -1,5 +1,6 @@
 import { DiagnosticSeverity } from "@stoplight/types";
 import { createWithRules, expectRuleErrors } from "./__helpers__/helper";
+import { openApiBase } from "./__helpers__/fixtures";
 
 const componentResponseDocument = (
   schemaName: string,
@@ -38,28 +39,34 @@ const componentResponseDocument = (
   },
 });
 
-const invalidDocument = {
-  openapi: "3.1.0",
-  info: {
-    title: "Test",
-    version: "1.0.0",
-  },
-  paths: {
-    "/articles/{id}": {
-      get: {
-        responses: {
-          "200": {
-            description: "ok",
-            content: {
-              "application/vnd.api+json": {
-                schema: {
-                  type: "object",
-                  properties: {
-                    data: {
+describe("Rule resource-object-id-required", () => {
+  let spectral = createWithRules(["resource-object-id-required"]);
+
+  beforeEach(() => {
+    spectral = createWithRules(["resource-object-id-required"]);
+  });
+
+  it("resource object omits id", async () => {
+    const document = {
+      ...openApiBase,
+      paths: {
+        "/articles/{id}": {
+          get: {
+            responses: {
+              "200": {
+                description: "ok",
+                content: {
+                  "application/vnd.api+json": {
+                    schema: {
                       type: "object",
                       properties: {
-                        type: {
-                          type: "string",
+                        data: {
+                          type: "object",
+                          properties: {
+                            type: {
+                              type: "string",
+                            },
+                          },
                         },
                       },
                     },
@@ -70,72 +77,85 @@ const invalidDocument = {
           },
         },
       },
-    },
-  },
-};
+    };
 
-const validDocument = structuredClone(invalidDocument);
-validDocument.paths["/articles/{id}"].get.responses["200"].content[
-  "application/vnd.api+json"
-].schema.properties.data.properties.id = {
-  type: "string",
-};
-
-describe("Rule resource-object-id-required", () => {
-  let spectral = createWithRules(["resource-object-id-required"]);
-
-  beforeEach(() => {
-    spectral = createWithRules(["resource-object-id-required"]);
-  });
-
-  it("resource object omits id", async () => {
-    await expectRuleErrors(
-      spectral,
-      "resource-object-id-required",
-      invalidDocument,
-      [
-        {
-          message: "Resource objects should include an id property.",
-          path: [
-            "paths",
-            "/articles/{id}",
-            "get",
-            "responses",
-            "200",
-            "content",
-            "application/vnd.api+json",
-            "schema",
-            "properties",
-            "data",
-          ],
-          severity: DiagnosticSeverity.Warning,
-        },
-        {
-          message: "Resource objects should include an id property.",
-          path: [
-            "paths",
-            "/articles/{id}",
-            "get",
-            "responses",
-            "200",
-            "content",
-            "application/vnd.api+json",
-            "schema",
-            "properties",
-            "data",
-            "properties",
-          ],
-          severity: DiagnosticSeverity.Warning,
-        },
-      ],
-    );
+    await expectRuleErrors(spectral, "resource-object-id-required", document, [
+      {
+        message: "Resource objects should include an id property.",
+        path: [
+          "paths",
+          "/articles/{id}",
+          "get",
+          "responses",
+          "200",
+          "content",
+          "application/vnd.api+json",
+          "schema",
+          "properties",
+          "data",
+        ],
+        severity: DiagnosticSeverity.Warning,
+      },
+      {
+        message: "Resource objects should include an id property.",
+        path: [
+          "paths",
+          "/articles/{id}",
+          "get",
+          "responses",
+          "200",
+          "content",
+          "application/vnd.api+json",
+          "schema",
+          "properties",
+          "data",
+          "properties",
+        ],
+        severity: DiagnosticSeverity.Warning,
+      },
+    ]);
   });
 
   it("valid resource-object-id-required case", async () => {
+    const document = {
+      ...openApiBase,
+      paths: {
+        "/articles/{id}": {
+          get: {
+            responses: {
+              "200": {
+                description: "ok",
+                content: {
+                  "application/vnd.api+json": {
+                    schema: {
+                      type: "object",
+                      properties: {
+                        data: {
+                          type: "object",
+                          properties: {
+                            id: {
+                              type: "string",
+                            },
+                            type: {
+                              type: "string",
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    };
+
     await expectRuleErrors(
       spectral,
       "resource-object-id-required",
-      validDocument,
+      document,
       [],
     );
   });

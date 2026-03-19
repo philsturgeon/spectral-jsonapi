@@ -71,6 +71,336 @@ var NodeFormat;
 })(NodeFormat || (NodeFormat = {}));
 
 // src/ruleset.ts
+var relationshipPropertiesSchema = {
+  type: "object",
+  anyOf: [
+    { required: ["links"] },
+    { required: ["data"] },
+    { required: ["meta"] }
+  ],
+  properties: {
+    links: {
+      type: "object",
+      properties: {
+        type: {
+          anyOf: [
+            {
+              type: "string",
+              enum: ["object"]
+            },
+            {
+              type: "array",
+              minItems: 1,
+              items: {
+                type: "string",
+                enum: ["object"]
+              }
+            }
+          ]
+        },
+        properties: {
+          type: "object",
+          anyOf: [{ required: ["self"] }, { required: ["related"] }],
+          properties: {
+            self: {
+              type: "object"
+            },
+            related: {
+              type: "object"
+            }
+          }
+        }
+      }
+    },
+    data: {
+      type: "object",
+      anyOf: [
+        {
+          properties: {
+            type: {
+              type: "string",
+              enum: ["object", "array", "null"]
+            }
+          }
+        },
+        {
+          properties: {
+            type: {
+              type: "array",
+              minItems: 1,
+              items: {
+                type: "string",
+                enum: ["object", "array", "null"]
+              }
+            }
+          }
+        },
+        {
+          properties: {
+            oneOf: {
+              type: "array",
+              minItems: 1
+            }
+          }
+        }
+      ]
+    },
+    meta: {
+      type: "object",
+      properties: {
+        type: {
+          anyOf: [
+            {
+              type: "string",
+              enum: ["object"]
+            },
+            {
+              type: "array",
+              minItems: 1,
+              items: {
+                type: "string",
+                enum: ["object"]
+              }
+            }
+          ]
+        }
+      }
+    }
+  },
+  additionalProperties: false
+};
+var relationshipSchemaRuleSchema = {
+  type: "object",
+  anyOf: [
+    {
+      required: ["properties"],
+      properties: {
+        type: {
+          anyOf: [
+            {
+              type: "string",
+              enum: ["object"]
+            },
+            {
+              type: "array",
+              minItems: 1,
+              items: {
+                type: "string",
+                enum: ["object"]
+              }
+            }
+          ]
+        },
+        properties: relationshipPropertiesSchema
+      }
+    },
+    {
+      required: ["allOf"],
+      properties: {
+        allOf: {
+          type: "array",
+          minItems: 1,
+          contains: {
+            type: "object",
+            required: ["properties"],
+            properties: {
+              properties: relationshipPropertiesSchema
+            }
+          }
+        }
+      }
+    }
+  ]
+};
+var relationshipDataEntrySchema = {
+  type: "object",
+  properties: {
+    id: {
+      type: "object",
+      properties: {
+        type: {
+          anyOf: [
+            {
+              type: "string",
+              enum: ["string"]
+            },
+            {
+              type: "array",
+              minItems: 1,
+              items: {
+                type: "string",
+                enum: ["string"]
+              }
+            }
+          ]
+        }
+      }
+    },
+    type: {
+      type: "object",
+      properties: {
+        type: {
+          anyOf: [
+            {
+              type: "string",
+              enum: ["string"]
+            },
+            {
+              type: "array",
+              minItems: 1,
+              items: {
+                type: "string",
+                enum: ["string"]
+              }
+            }
+          ]
+        }
+      }
+    },
+    meta: {
+      type: "object",
+      properties: {
+        type: {
+          anyOf: [
+            {
+              type: "string",
+              enum: ["object"]
+            },
+            {
+              type: "array",
+              minItems: 1,
+              items: {
+                type: "string",
+                enum: ["object"]
+              }
+            }
+          ]
+        }
+      }
+    }
+  }
+};
+var relationshipDataSchemaRuleSchema = {
+  anyOf: [
+    relationshipDataEntrySchema,
+    {
+      type: "object",
+      properties: {
+        type: {
+          anyOf: [
+            {
+              type: "string",
+              enum: ["array"]
+            },
+            {
+              type: "array",
+              minItems: 1,
+              items: {
+                type: "string",
+                enum: ["array"]
+              }
+            }
+          ]
+        },
+        items: relationshipDataEntrySchema
+      }
+    }
+  ]
+};
+var resourceObjectIdLeafSchema = {
+  anyOf: [
+    {
+      type: "object",
+      required: ["properties"],
+      properties: {
+        properties: {
+          type: "object",
+          required: ["id"]
+        }
+      }
+    },
+    {
+      type: "object",
+      required: ["allOf"],
+      properties: {
+        allOf: {
+          type: "array",
+          minItems: 1,
+          contains: {
+            type: "object",
+            required: ["properties"],
+            properties: {
+              properties: {
+                type: "object",
+                required: ["id"]
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
+};
+var resourceObjectIdRuleSchema = {
+  anyOf: [
+    resourceObjectIdLeafSchema,
+    {
+      type: "object",
+      required: ["items"],
+      properties: {
+        items: {
+          anyOf: [
+            resourceObjectIdLeafSchema,
+            {
+              type: "object",
+              required: ["anyOf"],
+              properties: {
+                anyOf: {
+                  type: "array",
+                  minItems: 1,
+                  items: resourceObjectIdLeafSchema
+                }
+              }
+            },
+            {
+              type: "object",
+              required: ["oneOf"],
+              properties: {
+                oneOf: {
+                  type: "array",
+                  minItems: 1,
+                  items: resourceObjectIdLeafSchema
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      type: "object",
+      required: ["anyOf"],
+      properties: {
+        anyOf: {
+          type: "array",
+          minItems: 1,
+          items: resourceObjectIdLeafSchema
+        }
+      }
+    },
+    {
+      type: "object",
+      required: ["oneOf"],
+      properties: {
+        oneOf: {
+          type: "array",
+          minItems: 1,
+          items: resourceObjectIdLeafSchema
+        }
+      }
+    }
+  ]
+};
 var ruleset_default = {
   description: `# [{json:api}](https://jsonapi.org/) - [v1.1](https://jsonapi.org/format/1.1/)
 
@@ -98,10 +428,7 @@ This ruleset can be found on GitHub: [spectral-jsonapi](https://github.com/phils
     ],
     LinkObjects: ["#AllContentSchemas..properties[links]"],
     MetaObjects: ["#AllContentSchemas..properties[meta]"],
-    Relationships: [
-      "#AllContentSchemas..properties[relationships]",
-      "#AllContentSchemas..allOf[*].properties[relationships]"
-    ],
+    Relationships: ["#AllContentSchemas..properties[relationships]"],
     RelationshipData: ["#Relationships..data"],
     POSTRelationships: [
       "$.paths..post.requestBody.content[application/vnd.api+json].schema.properties.data.properties[relationships].properties[*]",
@@ -494,10 +821,18 @@ Related specification information can be found [here](https://jsonapi.org/format
       documentationUrl: "https://jsonapi.org/format/1.1/#document-resource-objects",
       message: "Resource objects should include an id property.",
       severity: DiagnosticSeverity.Warning,
-      given: "#ResourceObjects",
+      resolved: true,
+      given: [
+        "$.paths..responses..content[application/vnd.api+json].schema.properties.data",
+        "$.paths..responses..content[application/vnd.api+json].schema.properties.data.items",
+        "$.paths..content[application/vnd.api+json].schema.properties.included.items"
+      ],
       then: {
-        field: "id",
-        function: truthy
+        function: schema,
+        functionOptions: {
+          dialect: "draft2020-12",
+          schema: resourceObjectIdRuleSchema
+        }
       }
     },
     "resource-object-property-types": {
@@ -856,85 +1191,13 @@ Related specification information can be found [here](https://jsonapi.org/format
       message: "Each relationship object must include links, data, or meta, and match JSON:API structure.",
       severity: DiagnosticSeverity.Error,
       given: "#Relationships.properties[*]",
-      then: [
-        {
-          field: "type",
-          function: enumeration,
-          functionOptions: {
-            values: ["object"]
-          }
-        },
-        {
-          field: "properties",
-          function: schema,
-          functionOptions: {
-            dialect: "draft2020-12",
-            schema: {
-              type: "object",
-              anyOf: [
-                {
-                  required: ["links"]
-                },
-                {
-                  required: ["data"]
-                },
-                {
-                  required: ["meta"]
-                }
-              ],
-              properties: {
-                links: {
-                  type: "object",
-                  properties: {
-                    type: {
-                      type: "string",
-                      enum: ["object"]
-                    },
-                    properties: {
-                      type: "object",
-                      anyOf: [
-                        {
-                          required: ["self"]
-                        },
-                        {
-                          required: ["related"]
-                        }
-                      ],
-                      properties: {
-                        self: {
-                          type: "object"
-                        },
-                        related: {
-                          type: "object"
-                        }
-                      }
-                    }
-                  }
-                },
-                data: {
-                  type: "object",
-                  properties: {
-                    type: {
-                      type: "string",
-                      enum: ["object", "array", "null"]
-                    }
-                  }
-                },
-                meta: {
-                  type: "object",
-                  properties: {
-                    type: {
-                      type: "string",
-                      enum: ["object"]
-                    }
-                  }
-                }
-              },
-              additionalProperties: false
-            }
-          }
+      then: {
+        function: schema,
+        functionOptions: {
+          dialect: "draft2020-12",
+          schema: relationshipSchemaRuleSchema
         }
-      ]
+      }
     },
     "relationship-data-properties": {
       description: `relationship \`data\` **MAY** only contain: \`id\`, \`type\` and \`meta\`
@@ -1047,39 +1310,7 @@ Related specification information can be found [here](https://jsonapi.org/format
         function: schema,
         functionOptions: {
           dialect: "draft2020-12",
-          schema: {
-            type: "object",
-            required: ["id", "type"],
-            properties: {
-              id: {
-                type: "object",
-                properties: {
-                  type: {
-                    type: "string",
-                    enum: ["string"]
-                  }
-                }
-              },
-              type: {
-                type: "object",
-                properties: {
-                  type: {
-                    type: "string",
-                    enum: ["string"]
-                  }
-                }
-              },
-              meta: {
-                type: "object",
-                properties: {
-                  type: {
-                    type: "string",
-                    enum: ["object"]
-                  }
-                }
-              }
-            }
-          }
+          schema: relationshipDataSchemaRuleSchema
         }
       }
     },
@@ -1312,7 +1543,7 @@ Related specification information can be found [here](https://jsonapi.org/format
         }
       ]
     },
-    "fetching-resource-200": {
+    "get-200-response-code": {
       description: `\`GET\` requests **MUST** support response code 200
 
 **Invalid Example:**
@@ -1347,7 +1578,7 @@ Related specification information can be found [here](https://jsonapi.org/format
         function: truthy
       }
     },
-    "fetching-resource-404": {
+    "get-404-response-code": {
       description: `\`GET\` requests to single resource endpoints **MUST** support response code 404
 
 Per the JSON:API specification, a server MUST respond with 404 Not Found when
@@ -1381,7 +1612,7 @@ Related specification information can be found [here](https://jsonapi.org/format
       documentationUrl: "https://jsonapi.org/format/1.1/#fetching-resources-responses",
       message: "Single-resource GET operations must define a 404 response.",
       severity: DiagnosticSeverity.Error,
-      given: "$.paths[*][get].responses",
+      given: "$.paths[?(@property.match(/{[^}]+}/))][get].responses",
       then: {
         field: "404",
         function: truthy
@@ -1919,11 +2150,11 @@ Related specification information can be found [here](https://jsonapi.org/format
       }
     },
     "post-201-response": {
-      description: `A POST 201 response **MUST** return the primary resource
+      description: `A POST 201 response **MUST** return a document that contains the resource as primary data.
 
 Related specification information can be found [here](https://jsonapi.org/format/1.1/#crud-creating-responses).`,
       documentationUrl: "https://jsonapi.org/format/1.1/#crud-creating-responses",
-      message: "POST 201 responses should include primary resource data.",
+      message: "POST 201 responses should include primary resource data using keys data, meta, jsonapi, or links.",
       severity: DiagnosticSeverity.Information,
       given: "$.paths[*][post].responses.201.content[application/vnd.api+json].schema",
       then: {
@@ -1934,14 +2165,7 @@ Related specification information can be found [here](https://jsonapi.org/format
             type: "array",
             items: {
               type: "string",
-              anyOf: [
-                {
-                  enum: ["data"]
-                },
-                {
-                  enum: ["data", "meta", "jsonapi", "links"]
-                }
-              ]
+              enum: ["data", "meta", "jsonapi", "links"]
             }
           }
         }
@@ -2059,6 +2283,7 @@ Related specification information can be found [here](https://jsonapi.org/format
 # Example showing use of source in error object.
 
 type: array
+maxItems:1
 items:
     type: object
     properties:
@@ -2066,12 +2291,10 @@ items:
         type: string
       status:
         type: string
-        enum:
-          - 409
+        const: 409
       title:
         type: string
-        enum:
-          - Conflict
+        const: Conflict
       source:
         type: object
         properties:
@@ -2084,17 +2307,16 @@ items:
                 items:
                   type: string
                   format: json-pointer
-maxItems:1
 \`\`\`
 
 Related specification information can be found [here](https://jsonapi.org/format/1.1/#crud-creating-responses).`,
       documentationUrl: "https://jsonapi.org/format/1.1/#crud-creating-responses",
       message: "POST 409 responses should include source to explain the conflict.",
       severity: DiagnosticSeverity.Information,
-      given: "$.paths[*][post].responses",
+      given: "$.paths[*][post].responses[409].content['application/vnd.api+json'].schema.properties",
       then: {
-        field: "409",
-        function: falsy
+        field: "source",
+        function: truthy
       }
     },
     "put-disallowed": {

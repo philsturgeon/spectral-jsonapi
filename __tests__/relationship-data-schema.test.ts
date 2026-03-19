@@ -1,5 +1,6 @@
 import { DiagnosticSeverity } from "@stoplight/types";
 import { createWithRules, expectRuleErrors } from "./__helpers__/helper";
+import { openApiBase } from "./__helpers__/fixtures";
 
 const sharedRelationshipSchemas = {
   BaseModel: {
@@ -83,43 +84,49 @@ const componentResponseDocument = (
   },
 });
 
-const invalidDocument = {
-  openapi: "3.1.0",
-  info: {
-    title: "Test",
-    version: "1.0.0",
-  },
-  paths: {
-    "/articles/{id}": {
-      get: {
-        responses: {
-          "200": {
-            description: "ok",
-            content: {
-              "application/vnd.api+json": {
-                schema: {
-                  type: "object",
-                  properties: {
-                    data: {
+describe("Rule relationship-data-schema", () => {
+  let spectral = createWithRules(["relationship-data-schema"]);
+
+  beforeEach(() => {
+    spectral = createWithRules(["relationship-data-schema"]);
+  });
+
+  it("relationship data id is not string", async () => {
+    const document = {
+      ...openApiBase,
+      paths: {
+        "/articles/{id}": {
+          get: {
+            responses: {
+              "200": {
+                description: "ok",
+                content: {
+                  "application/vnd.api+json": {
+                    schema: {
                       type: "object",
                       properties: {
-                        type: {
-                          type: "string",
-                        },
-                        relationships: {
+                        data: {
                           type: "object",
                           properties: {
-                            author: {
+                            type: {
+                              type: "string",
+                            },
+                            relationships: {
                               type: "object",
                               properties: {
-                                data: {
+                                author: {
                                   type: "object",
                                   properties: {
-                                    id: {
-                                      type: "integer",
-                                    },
-                                    type: {
-                                      type: "string",
+                                    data: {
+                                      type: "object",
+                                      properties: {
+                                        id: {
+                                          type: "integer",
+                                        },
+                                        type: {
+                                          type: "string",
+                                        },
+                                      },
                                     },
                                   },
                                 },
@@ -136,115 +143,142 @@ const invalidDocument = {
           },
         },
       },
-    },
-  },
-};
+    };
 
-const validDocument = structuredClone(invalidDocument);
-validDocument.paths["/articles/{id}"].get.responses["200"].content[
-  "application/vnd.api+json"
-].schema.properties.data.properties.relationships.properties.author.properties.data.properties.id.type =
-  "string";
-
-describe("Rule relationship-data-schema", () => {
-  let spectral = createWithRules(["relationship-data-schema"]);
-
-  beforeEach(() => {
-    spectral = createWithRules(["relationship-data-schema"]);
-  });
-
-  it("relationship data id is not string", async () => {
-    await expectRuleErrors(
-      spectral,
-      "relationship-data-schema",
-      invalidDocument,
-      [
-        {
-          message:
-            "Relationship data entries must match the resource identifier schema.",
-          path: [
-            "paths",
-            "/articles/{id}",
-            "get",
-            "responses",
-            "200",
-            "content",
-            "application/vnd.api+json",
-            "schema",
-            "properties",
-            "data",
-            "properties",
-            "relationships",
-            "properties",
-            "author",
-            "properties",
-            "data",
-            "properties",
-          ],
-          severity: DiagnosticSeverity.Error,
-        },
-        {
-          message:
-            "Relationship data entries must match the resource identifier schema.",
-          path: [
-            "paths",
-            "/articles/{id}",
-            "get",
-            "responses",
-            "200",
-            "content",
-            "application/vnd.api+json",
-            "schema",
-            "properties",
-            "data",
-            "properties",
-            "relationships",
-            "properties",
-            "author",
-            "properties",
-            "data",
-            "properties",
-            "id",
-            "type",
-          ],
-          severity: DiagnosticSeverity.Error,
-        },
-        {
-          message:
-            "Relationship data entries must match the resource identifier schema.",
-          path: [
-            "paths",
-            "/articles/{id}",
-            "get",
-            "responses",
-            "200",
-            "content",
-            "application/vnd.api+json",
-            "schema",
-            "properties",
-            "data",
-            "properties",
-            "relationships",
-            "properties",
-            "author",
-            "properties",
-            "data",
-            "properties",
-            "type",
-          ],
-          severity: DiagnosticSeverity.Error,
-        },
-      ],
-    );
+    await expectRuleErrors(spectral, "relationship-data-schema", document, [
+      {
+        message:
+          "Relationship data entries must match the resource identifier schema.",
+        path: [
+          "paths",
+          "/articles/{id}",
+          "get",
+          "responses",
+          "200",
+          "content",
+          "application/vnd.api+json",
+          "schema",
+          "properties",
+          "data",
+          "properties",
+          "relationships",
+          "properties",
+          "author",
+          "properties",
+          "data",
+          "properties",
+        ],
+        severity: DiagnosticSeverity.Error,
+      },
+      {
+        message:
+          "Relationship data entries must match the resource identifier schema.",
+        path: [
+          "paths",
+          "/articles/{id}",
+          "get",
+          "responses",
+          "200",
+          "content",
+          "application/vnd.api+json",
+          "schema",
+          "properties",
+          "data",
+          "properties",
+          "relationships",
+          "properties",
+          "author",
+          "properties",
+          "data",
+          "properties",
+          "id",
+          "type",
+        ],
+        severity: DiagnosticSeverity.Error,
+      },
+      {
+        message:
+          "Relationship data entries must match the resource identifier schema.",
+        path: [
+          "paths",
+          "/articles/{id}",
+          "get",
+          "responses",
+          "200",
+          "content",
+          "application/vnd.api+json",
+          "schema",
+          "properties",
+          "data",
+          "properties",
+          "relationships",
+          "properties",
+          "author",
+          "properties",
+          "data",
+          "properties",
+          "type",
+        ],
+        severity: DiagnosticSeverity.Error,
+      },
+    ]);
   });
 
   it("valid relationship-data-schema case", async () => {
-    await expectRuleErrors(
-      spectral,
-      "relationship-data-schema",
-      validDocument,
-      [],
-    );
+    const document = {
+      ...openApiBase,
+      paths: {
+        "/articles/{id}": {
+          get: {
+            responses: {
+              "200": {
+                description: "ok",
+                content: {
+                  "application/vnd.api+json": {
+                    schema: {
+                      type: "object",
+                      properties: {
+                        data: {
+                          type: "object",
+                          properties: {
+                            type: {
+                              type: "string",
+                            },
+                            relationships: {
+                              type: "object",
+                              properties: {
+                                author: {
+                                  type: "object",
+                                  properties: {
+                                    data: {
+                                      type: "object",
+                                      properties: {
+                                        id: {
+                                          type: "string",
+                                        },
+                                        type: {
+                                          type: "string",
+                                        },
+                                      },
+                                    },
+                                  },
+                                },
+                              },
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    };
+
+    await expectRuleErrors(spectral, "relationship-data-schema", document, []);
   });
 
   it("valid: allOf relationship data narrowed in second member", async () => {

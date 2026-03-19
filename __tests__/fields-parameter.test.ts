@@ -1,37 +1,6 @@
 import { DiagnosticSeverity } from "@stoplight/types";
 import { createWithRules, expectRuleErrors } from "./__helpers__/helper";
-
-const invalidDocument = {
-  openapi: "3.1.0",
-  info: {
-    title: "Test",
-    version: "1.0.0",
-  },
-  paths: {
-    "/articles": {
-      get: {
-        parameters: [
-          {
-            name: "fields",
-            in: "query",
-            style: "form",
-            schema: {
-              type: "object",
-            },
-          },
-        ],
-        responses: {
-          "200": {
-            description: "ok",
-          },
-        },
-      },
-    },
-  },
-};
-
-const validDocument = structuredClone(invalidDocument);
-validDocument.paths["/articles"].get.parameters[0].style = "deepObject";
+import { openApiBase } from "./__helpers__/fixtures";
 
 describe("Rule fields-parameter", () => {
   let spectral = createWithRules(["fields-parameter"]);
@@ -41,7 +10,32 @@ describe("Rule fields-parameter", () => {
   });
 
   it("fields incorrectly uses form style", async () => {
-    await expectRuleErrors(spectral, "fields-parameter", invalidDocument, [
+    const document = {
+      ...openApiBase,
+      paths: {
+        "/articles": {
+          get: {
+            parameters: [
+              {
+                name: "fields",
+                in: "query",
+                style: "form",
+                schema: {
+                  type: "object",
+                },
+              },
+            ],
+            responses: {
+              "200": {
+                description: "ok",
+              },
+            },
+          },
+        },
+      },
+    };
+
+    await expectRuleErrors(spectral, "fields-parameter", document, [
       {
         message: "fields must be a query parameter using deepObject style.",
         path: ["paths", "/articles", "get", "parameters", "0", "style"],
@@ -51,6 +45,31 @@ describe("Rule fields-parameter", () => {
   });
 
   it("valid fields-parameter case", async () => {
-    await expectRuleErrors(spectral, "fields-parameter", validDocument, []);
+    const document = {
+      ...openApiBase,
+      paths: {
+        "/articles": {
+          get: {
+            parameters: [
+              {
+                name: "fields",
+                in: "query",
+                style: "deepObject",
+                schema: {
+                  type: "object",
+                },
+              },
+            ],
+            responses: {
+              "200": {
+                description: "ok",
+              },
+            },
+          },
+        },
+      },
+    };
+
+    await expectRuleErrors(spectral, "fields-parameter", document, []);
   });
 });

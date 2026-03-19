@@ -1,36 +1,6 @@
 import { DiagnosticSeverity } from "@stoplight/types";
 import { createWithRules, expectRuleErrors } from "./__helpers__/helper";
-
-const invalidDocument = {
-  openapi: "3.1.0",
-  info: {
-    title: "Test",
-    version: "1.0.0",
-  },
-  paths: {
-    "/articles/{id}": {
-      get: {
-        responses: {
-          "200": {
-            description: "ok",
-            content: {
-              "application/vnd.api+json": {
-                schema: {
-                  type: "array",
-                },
-              },
-            },
-          },
-        },
-      },
-    },
-  },
-};
-
-const validDocument = structuredClone(invalidDocument);
-validDocument.paths["/articles/{id}"].get.responses["200"].content[
-  "application/vnd.api+json"
-].schema.type = "object";
+import { openApiBase } from "./__helpers__/fixtures";
 
 describe("Rule top-level-json-object", () => {
   let spectral = createWithRules(["top-level-json-object"]);
@@ -40,7 +10,29 @@ describe("Rule top-level-json-object", () => {
   });
 
   it("top-level schema is not an object", async () => {
-    await expectRuleErrors(spectral, "top-level-json-object", invalidDocument, [
+    const document = {
+      ...openApiBase,
+      paths: {
+        "/articles/{id}": {
+          get: {
+            responses: {
+              "200": {
+                description: "ok",
+                content: {
+                  "application/vnd.api+json": {
+                    schema: {
+                      type: "array",
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    };
+
+    await expectRuleErrors(spectral, "top-level-json-object", document, [
       {
         message:
           "Request and response bodies must have a top-level JSON object.",
@@ -61,11 +53,28 @@ describe("Rule top-level-json-object", () => {
   });
 
   it("valid top-level-json-object case", async () => {
-    await expectRuleErrors(
-      spectral,
-      "top-level-json-object",
-      validDocument,
-      [],
-    );
+    const document = {
+      ...openApiBase,
+      paths: {
+        "/articles/{id}": {
+          get: {
+            responses: {
+              "200": {
+                description: "ok",
+                content: {
+                  "application/vnd.api+json": {
+                    schema: {
+                      type: "object",
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    };
+
+    await expectRuleErrors(spectral, "top-level-json-object", document, []);
   });
 });

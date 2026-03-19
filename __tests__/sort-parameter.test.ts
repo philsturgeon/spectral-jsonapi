@@ -1,38 +1,6 @@
 import { DiagnosticSeverity } from "@stoplight/types";
 import { createWithRules, expectRuleErrors } from "./__helpers__/helper";
-import { base } from "./__helpers__/fixtures";
-
-const invalidDocument = {
-  ...base,
-  paths: {
-    "/articles": {
-      get: {
-        parameters: [
-          {
-            name: "sort",
-            in: "query",
-            style: "form",
-            explode: true,
-            schema: {
-              type: "array",
-              items: {
-                type: "string",
-              },
-            },
-          },
-        ],
-        responses: {
-          "200": {
-            description: "ok",
-          },
-        },
-      },
-    },
-  },
-};
-
-const validDocument = structuredClone(invalidDocument);
-validDocument.paths["/articles"].get.parameters[0].explode = false;
+import { openApiBase } from "./__helpers__/fixtures";
 
 describe("Rule sort-parameter", () => {
   let spectral = createWithRules(["sort-parameter"]);
@@ -42,7 +10,36 @@ describe("Rule sort-parameter", () => {
   });
 
   it("sort incorrectly uses explode true", async () => {
-    await expectRuleErrors(spectral, "sort-parameter", invalidDocument, [
+    const document = {
+      ...openApiBase,
+      paths: {
+        "/articles": {
+          get: {
+            parameters: [
+              {
+                name: "sort",
+                in: "query",
+                style: "form",
+                explode: true,
+                schema: {
+                  type: "array",
+                  items: {
+                    type: "string",
+                  },
+                },
+              },
+            ],
+            responses: {
+              "200": {
+                description: "ok",
+              },
+            },
+          },
+        },
+      },
+    };
+
+    await expectRuleErrors(spectral, "sort-parameter", document, [
       {
         message: "sort must be a query parameter using CSV array style.",
         path: ["paths", "/articles", "get", "parameters", "0", "explode"],
@@ -52,6 +49,35 @@ describe("Rule sort-parameter", () => {
   });
 
   it("valid sort-parameter case", async () => {
-    await expectRuleErrors(spectral, "sort-parameter", validDocument, []);
+    const document = {
+      ...openApiBase,
+      paths: {
+        "/articles": {
+          get: {
+            parameters: [
+              {
+                name: "sort",
+                in: "query",
+                style: "form",
+                explode: false,
+                schema: {
+                  type: "array",
+                  items: {
+                    type: "string",
+                  },
+                },
+              },
+            ],
+            responses: {
+              "200": {
+                description: "ok",
+              },
+            },
+          },
+        },
+      },
+    };
+
+    await expectRuleErrors(spectral, "sort-parameter", document, []);
   });
 });

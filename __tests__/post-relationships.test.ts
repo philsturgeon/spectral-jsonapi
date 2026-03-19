@@ -1,36 +1,43 @@
 import { DiagnosticSeverity } from "@stoplight/types";
 import { createWithRules, expectRuleErrors } from "./__helpers__/helper";
+import { openApiBase } from "./__helpers__/fixtures";
 
-const invalidDocument = {
-  openapi: "3.1.0",
-  info: {
-    title: "Test",
-    version: "1.0.0",
-  },
-  paths: {
-    "/articles": {
-      post: {
-        requestBody: {
-          content: {
-            "application/vnd.api+json": {
-              schema: {
-                type: "object",
-                properties: {
-                  data: {
+describe("Rule post-relationships", () => {
+  let spectral = createWithRules(["post-relationships"]);
+
+  beforeEach(() => {
+    spectral = createWithRules(["post-relationships"]);
+  });
+
+  it("post relationship required contains invalid member", async () => {
+    const document = {
+      ...openApiBase,
+      paths: {
+        "/articles": {
+          post: {
+            requestBody: {
+              content: {
+                "application/vnd.api+json": {
+                  schema: {
                     type: "object",
                     properties: {
-                      type: {
-                        type: "string",
-                      },
-                      relationships: {
+                      data: {
                         type: "object",
                         properties: {
-                          author: {
+                          type: {
+                            type: "string",
+                          },
+                          relationships: {
                             type: "object",
-                            required: ["foo"],
                             properties: {
-                              links: {
+                              author: {
                                 type: "object",
+                                required: ["foo"],
+                                properties: {
+                                  links: {
+                                    type: "object",
+                                  },
+                                },
                               },
                             },
                           },
@@ -41,33 +48,17 @@ const invalidDocument = {
                 },
               },
             },
-          },
-        },
-        responses: {
-          "201": {
-            description: "created",
+            responses: {
+              "201": {
+                description: "created",
+              },
+            },
           },
         },
       },
-    },
-  },
-};
+    };
 
-const validDocument = structuredClone(invalidDocument);
-validDocument.paths["/articles"].post.requestBody.content[
-  "application/vnd.api+json"
-].schema.properties.data.properties.relationships.properties.author.required[0] =
-  "data";
-
-describe("Rule post-relationships", () => {
-  let spectral = createWithRules(["post-relationships"]);
-
-  beforeEach(() => {
-    spectral = createWithRules(["post-relationships"]);
-  });
-
-  it("post relationship required contains invalid member", async () => {
-    await expectRuleErrors(spectral, "post-relationships", invalidDocument, [
+    await expectRuleErrors(spectral, "post-relationships", document, [
       {
         message: "If POST relationships are present, they must include data.",
         path: [
@@ -93,6 +84,54 @@ describe("Rule post-relationships", () => {
   });
 
   it("valid post-relationships case", async () => {
-    await expectRuleErrors(spectral, "post-relationships", validDocument, []);
+    const document = {
+      ...openApiBase,
+      paths: {
+        "/articles": {
+          post: {
+            requestBody: {
+              content: {
+                "application/vnd.api+json": {
+                  schema: {
+                    type: "object",
+                    properties: {
+                      data: {
+                        type: "object",
+                        properties: {
+                          type: {
+                            type: "string",
+                          },
+                          relationships: {
+                            type: "object",
+                            properties: {
+                              author: {
+                                type: "object",
+                                required: ["data"],
+                                properties: {
+                                  links: {
+                                    type: "object",
+                                  },
+                                },
+                              },
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+            responses: {
+              "201": {
+                description: "created",
+              },
+            },
+          },
+        },
+      },
+    };
+
+    await expectRuleErrors(spectral, "post-relationships", document, []);
   });
 });

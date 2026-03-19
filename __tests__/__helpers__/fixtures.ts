@@ -1,10 +1,10 @@
-export const base = {
+export const openApiBase = {
   openapi: "3.1.0",
   info: { title: "Test", version: "1.0.0" },
 };
 
 export const asResponseDoc = (schema: Record<string, unknown>) => ({
-  ...base,
+  ...openApiBase,
   paths: {
     "/articles/{id}": {
       get: {
@@ -27,7 +27,7 @@ export const asPostDoc = (
   requestSchema: Record<string, unknown>,
   responses: Record<string, unknown> = { "201": { description: "created" } },
 ) => ({
-  ...base,
+  ...openApiBase,
   paths: {
     "/articles": {
       post: {
@@ -48,7 +48,7 @@ export const asPatchDoc = (
   requestSchema: Record<string, unknown>,
   responses: Record<string, unknown> = { "200": { description: "ok" } },
 ) => ({
-  ...base,
+  ...openApiBase,
   paths: {
     "/articles/{id}": {
       patch: {
