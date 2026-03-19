@@ -9,6 +9,145 @@ import {
 import { oas3 } from "@stoplight/spectral-formats";
 import { DiagnosticSeverity } from "@stoplight/types";
 
+const relationshipPropertiesSchema = {
+  type: "object",
+  anyOf: [{ required: ["links"] }, { required: ["data"] }, { required: ["meta"] }],
+  properties: {
+    links: {
+      type: "object",
+      properties: {
+        type: {
+          anyOf: [
+            {
+              type: "string",
+              enum: ["object"],
+            },
+            {
+              type: "array",
+              minItems: 1,
+              items: {
+                type: "string",
+                enum: ["object"],
+              },
+            },
+          ],
+        },
+        properties: {
+          type: "object",
+          anyOf: [{ required: ["self"] }, { required: ["related"] }],
+          properties: {
+            self: {
+              type: "object",
+            },
+            related: {
+              type: "object",
+            },
+          },
+        },
+      },
+    },
+    data: {
+      type: "object",
+      anyOf: [
+        {
+          properties: {
+            type: {
+              type: "string",
+              enum: ["object", "array", "null"],
+            },
+          },
+        },
+        {
+          properties: {
+            type: {
+              type: "array",
+              minItems: 1,
+              items: {
+                type: "string",
+                enum: ["object", "array", "null"],
+              },
+            },
+          },
+        },
+        {
+          properties: {
+            oneOf: {
+              type: "array",
+              minItems: 1,
+            },
+          },
+        },
+      ],
+    },
+    meta: {
+      type: "object",
+      properties: {
+        type: {
+          anyOf: [
+            {
+              type: "string",
+              enum: ["object"],
+            },
+            {
+              type: "array",
+              minItems: 1,
+              items: {
+                type: "string",
+                enum: ["object"],
+              },
+            },
+          ],
+        },
+      },
+    },
+  },
+  additionalProperties: false,
+};
+
+const relationshipSchemaRuleSchema = {
+  type: "object",
+  anyOf: [
+    {
+      required: ["properties"],
+      properties: {
+        type: {
+          anyOf: [
+            {
+              type: "string",
+              enum: ["object"],
+            },
+            {
+              type: "array",
+              minItems: 1,
+              items: {
+                type: "string",
+                enum: ["object"],
+              },
+            },
+          ],
+        },
+        properties: relationshipPropertiesSchema,
+      },
+    },
+    {
+      required: ["allOf"],
+      properties: {
+        allOf: {
+          type: "array",
+          minItems: 1,
+          contains: {
+            type: "object",
+            required: ["properties"],
+            properties: {
+              properties: relationshipPropertiesSchema,
+            },
+          },
+        },
+      },
+    },
+  ],
+};
+
 export default {
   description: `# [{json:api}](https://jsonapi.org/) - [v1.1](https://jsonapi.org/format/1.1/)
 
@@ -752,7 +891,7 @@ relationships:
 Related specification information can be found [here](https://jsonapi.org/format/1.1/#document-resource-object-relationships).`,
       documentationUrl:
         "https://jsonapi.org/format/1.1/#document-resource-object-relationships",
-      message: "relationships must be an object.",
+
       severity: DiagnosticSeverity.Error,
       given: "#Relationships",
       then: {
@@ -762,6 +901,7 @@ Related specification information can be found [here](https://jsonapi.org/format
           values: ["object"],
         },
       },
+      resolved: true,
     },
     "relationship-schema": {
       description: `relationship object **MUST** follow the schema
@@ -806,88 +946,16 @@ Related specification information can be found [here](https://jsonapi.org/format
       documentationUrl:
         "https://jsonapi.org/format/1.1/#document-resource-object-relationships",
       message:
-        "Each relationship object must include links, data, or meta and match JSON:API structure.",
+        "Each relationship object must include links, data, or meta, and match JSON:API structure.",
       severity: DiagnosticSeverity.Error,
       given: "#Relationships.properties[*]",
-      then: [
-        {
-          field: "type",
-          function: enumeration,
-          functionOptions: {
-            values: ["object"],
-          },
+      then: {
+        function: schema,
+        functionOptions: {
+          dialect: "draft2020-12",
+          schema: relationshipSchemaRuleSchema,
         },
-        {
-          field: "properties",
-          function: schema,
-          functionOptions: {
-            dialect: "draft2020-12",
-            schema: {
-              type: "object",
-              anyOf: [
-                {
-                  required: ["links"],
-                },
-                {
-                  required: ["data"],
-                },
-                {
-                  required: ["meta"],
-                },
-              ],
-              properties: {
-                links: {
-                  type: "object",
-                  properties: {
-                    type: {
-                      type: "string",
-                      enum: ["object"],
-                    },
-                    properties: {
-                      type: "object",
-                      anyOf: [
-                        {
-                          required: ["self"],
-                        },
-                        {
-                          required: ["related"],
-                        },
-                      ],
-                      properties: {
-                        self: {
-                          type: "object",
-                        },
-                        related: {
-                          type: "object",
-                        },
-                      },
-                    },
-                  },
-                },
-                data: {
-                  type: "object",
-                  properties: {
-                    type: {
-                      type: "string",
-                      enum: ["object", "array", "null"],
-                    },
-                  },
-                },
-                meta: {
-                  type: "object",
-                  properties: {
-                    type: {
-                      type: "string",
-                      enum: ["object"],
-                    },
-                  },
-                },
-              },
-              additionalProperties: false,
-            },
-          },
-        },
-      ],
+      },
     },
     "relationship-data-properties": {
       description: `relationship \`data\` **MAY** only contain: \`id\`, \`type\` and \`meta\`

@@ -98,7 +98,10 @@ This ruleset can be found on GitHub: [spectral-jsonapi](https://github.com/phils
     ],
     LinkObjects: ["#AllContentSchemas..properties[links]"],
     MetaObjects: ["#AllContentSchemas..properties[meta]"],
-    Relationships: ["#AllContentSchemas..properties[relationships]"],
+    Relationships: [
+      "#AllContentSchemas..properties[relationships]",
+      "#AllContentSchemas..allOf[*].properties[relationships]"
+    ],
     RelationshipData: ["#Relationships..data"],
     POSTRelationships: [
       "$.paths..post.requestBody.content[application/vnd.api+json].schema.properties.data.properties[relationships].properties[*]",
@@ -798,7 +801,6 @@ relationships:
 
 Related specification information can be found [here](https://jsonapi.org/format/1.1/#document-resource-object-relationships).`,
       documentationUrl: "https://jsonapi.org/format/1.1/#document-resource-object-relationships",
-      message: "relationships must be an object.",
       severity: DiagnosticSeverity.Error,
       given: "#Relationships",
       then: {
@@ -807,7 +809,8 @@ Related specification information can be found [here](https://jsonapi.org/format
         functionOptions: {
           values: ["object"]
         }
-      }
+      },
+      resolved: true
     },
     "relationship-schema": {
       description: `relationship object **MUST** follow the schema
@@ -850,7 +853,7 @@ Related specification information can be found [here](https://jsonapi.org/format
 
 Related specification information can be found [here](https://jsonapi.org/format/1.1/#document-resource-object-relationships).`,
       documentationUrl: "https://jsonapi.org/format/1.1/#document-resource-object-relationships",
-      message: "Each relationship object must include links, data, or meta and match JSON:API structure.",
+      message: "Each relationship object must include links, data, or meta, and match JSON:API structure.",
       severity: DiagnosticSeverity.Error,
       given: "#Relationships.properties[*]",
       then: [

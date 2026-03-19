@@ -246,7 +246,6 @@ declare const _default: {
         "relationships-object-type": {
             description: string;
             documentationUrl: string;
-            message: string;
             severity: DiagnosticSeverity;
             given: string;
             then: {
@@ -256,6 +255,7 @@ declare const _default: {
                     values: string[];
                 };
             };
+            resolved: boolean;
         };
         "relationship-schema": {
             description: string;

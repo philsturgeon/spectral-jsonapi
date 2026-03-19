@@ -31,6 +31,7 @@ aliases:
     - "#AllContentSchemas..properties[meta]"
   Relationships:
     - "#AllContentSchemas..properties[relationships]"
+    - "#AllContentSchemas..allOf[*].properties[relationships]"
   RelationshipData:
     - "#Relationships..data"
   POSTRelationships:
@@ -684,7 +685,6 @@ rules:
 
       Related specification information can be found [here](https://jsonapi.org/format/1.1/#document-resource-object-relationships).
     documentationUrl: https://jsonapi.org/format/1.1/#document-resource-object-relationships
-    message: relationships must be an object.
     severity: 0
     given: "#Relationships"
     then:
@@ -693,6 +693,7 @@ rules:
       functionOptions:
         values:
           - object
+    resolved: true
   relationship-schema:
     description: |-
       relationship object **MUST** follow the schema
@@ -735,7 +736,7 @@ rules:
 
       Related specification information can be found [here](https://jsonapi.org/format/1.1/#document-resource-object-relationships).
     documentationUrl: https://jsonapi.org/format/1.1/#document-resource-object-relationships
-    message: Each relationship object must include links, data, or meta and match JSON:API structure.
+    message: Each relationship object must include links, data, or meta, and match JSON:API structure.
     severity: 0
     given: "#Relationships.properties[*]"
     then:
