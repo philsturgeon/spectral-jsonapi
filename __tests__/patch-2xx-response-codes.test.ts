@@ -1,5 +1,5 @@
 import { DiagnosticSeverity } from "@stoplight/types";
-import testRule from "./__helpers__/helper";
+import { createWithRules, expectRuleErrors } from "./__helpers__/helper";
 
 const invalidDocument = {
   openapi: "3.1.0",
@@ -39,22 +39,35 @@ validDocument.paths["/articles/{id}"].patch.responses["200"] = {
   description: "ok",
 };
 
-testRule("patch-2xx-response-codes", [
-  {
-    name: "patch has no success 2xx response",
-    document: invalidDocument,
-    errors: [
-      {
-        message:
-          "PATCH operations must define at least one success response: 200, 202, or 204.",
-        path: ["paths", "/articles/{id}", "patch", "responses"],
-        severity: DiagnosticSeverity.Error,
-      },
-    ],
-  },
-  {
-    name: "valid patch-2xx-response-codes case",
-    document: validDocument,
-    errors: [],
-  },
-]);
+describe("Rule patch-2xx-response-codes", () => {
+  let spectral = createWithRules(["patch-2xx-response-codes"]);
+
+  beforeEach(() => {
+    spectral = createWithRules(["patch-2xx-response-codes"]);
+  });
+
+  it("patch has no success 2xx response", async () => {
+    await expectRuleErrors(
+      spectral,
+      "patch-2xx-response-codes",
+      invalidDocument,
+      [
+        {
+          message:
+            "PATCH operations must define at least one success response: 200, 202, or 204.",
+          path: ["paths", "/articles/{id}", "patch", "responses"],
+          severity: DiagnosticSeverity.Error,
+        },
+      ],
+    );
+  });
+
+  it("valid patch-2xx-response-codes case", async () => {
+    await expectRuleErrors(
+      spectral,
+      "patch-2xx-response-codes",
+      validDocument,
+      [],
+    );
+  });
+});

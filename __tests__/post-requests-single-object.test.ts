@@ -1,5 +1,5 @@
 import { DiagnosticSeverity } from "@stoplight/types";
-import testRule from "./__helpers__/helper";
+import { createWithRules, expectRuleErrors } from "./__helpers__/helper";
 
 const invalidDocument = {
   openapi: "3.1.0",
@@ -45,33 +45,46 @@ validDocument.paths["/articles"].post.requestBody.content[
   "application/vnd.api+json"
 ].schema.properties.data.type = "object";
 
-testRule("post-requests-single-object", [
-  {
-    name: "post data is incorrectly an array",
-    document: invalidDocument,
-    errors: [
-      {
-        message:
-          "POST request data must be a single resource object, not an array.",
-        path: [
-          "paths",
-          "/articles",
-          "post",
-          "requestBody",
-          "content",
-          "application/vnd.api+json",
-          "schema",
-          "properties",
-          "data",
-          "type",
-        ],
-        severity: DiagnosticSeverity.Error,
-      },
-    ],
-  },
-  {
-    name: "valid post-requests-single-object case",
-    document: validDocument,
-    errors: [],
-  },
-]);
+describe("Rule post-requests-single-object", () => {
+  let spectral = createWithRules(["post-requests-single-object"]);
+
+  beforeEach(() => {
+    spectral = createWithRules(["post-requests-single-object"]);
+  });
+
+  it("post data is incorrectly an array", async () => {
+    await expectRuleErrors(
+      spectral,
+      "post-requests-single-object",
+      invalidDocument,
+      [
+        {
+          message:
+            "POST request data must be a single resource object, not an array.",
+          path: [
+            "paths",
+            "/articles",
+            "post",
+            "requestBody",
+            "content",
+            "application/vnd.api+json",
+            "schema",
+            "properties",
+            "data",
+            "type",
+          ],
+          severity: DiagnosticSeverity.Error,
+        },
+      ],
+    );
+  });
+
+  it("valid post-requests-single-object case", async () => {
+    await expectRuleErrors(
+      spectral,
+      "post-requests-single-object",
+      validDocument,
+      [],
+    );
+  });
+});

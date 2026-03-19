@@ -1,5 +1,5 @@
 import { DiagnosticSeverity } from "@stoplight/types";
-import testRule from "./__helpers__/helper";
+import { createWithRules, expectRuleErrors } from "./__helpers__/helper";
 
 const invalidDocument = {
   openapi: "3.1.0",
@@ -45,35 +45,50 @@ validDocument.paths["/articles/{id}"].get.responses["200"].content[
   "application/vnd.api+json"
 ].schema.properties.data.properties.relationships.type = "object";
 
-testRule("relationships-object-type", [
-  {
-    name: "relationships declared as array",
-    document: invalidDocument,
-    errors: [
-      {
-        message: "relationships must be an object.",
-        path: [
-          "paths",
-          "/articles/{id}",
-          "get",
-          "responses",
-          "200",
-          "content",
-          "application/vnd.api+json",
-          "schema",
-          "properties",
-          "data",
-          "properties",
-          "relationships",
-          "type",
-        ],
-        severity: DiagnosticSeverity.Error,
-      },
-    ],
-  },
-  {
-    name: "valid relationships-object-type case",
-    document: validDocument,
-    errors: [],
-  },
-]);
+describe("Rule relationships-object-type", () => {
+  let spectral = createWithRules(["relationships-object-type"]);
+
+  beforeEach(() => {
+    spectral = createWithRules(["relationships-object-type"]);
+  });
+
+  it("relationships declared as array", async () => {
+    await expectRuleErrors(
+      spectral,
+      "relationships-object-type",
+      invalidDocument,
+      [
+        {
+          message: expect.stringContaining(
+            "relationships **MUST** be an `object`",
+          ),
+          path: [
+            "paths",
+            "/articles/{id}",
+            "get",
+            "responses",
+            "200",
+            "content",
+            "application/vnd.api+json",
+            "schema",
+            "properties",
+            "data",
+            "properties",
+            "relationships",
+            "type",
+          ],
+          severity: DiagnosticSeverity.Error,
+        },
+      ],
+    );
+  });
+
+  it("valid relationships-object-type case", async () => {
+    await expectRuleErrors(
+      spectral,
+      "relationships-object-type",
+      validDocument,
+      [],
+    );
+  });
+});

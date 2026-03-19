@@ -1,5 +1,5 @@
 import { DiagnosticSeverity } from "@stoplight/types";
-import testRule from "./__helpers__/helper";
+import { createWithRules, expectRuleErrors } from "./__helpers__/helper";
 import { base } from "./__helpers__/fixtures";
 
 const invalidDocument = {
@@ -34,21 +34,24 @@ const invalidDocument = {
 const validDocument = structuredClone(invalidDocument);
 validDocument.paths["/articles"].get.parameters[0].explode = false;
 
-testRule("sort-parameter", [
-  {
-    name: "sort incorrectly uses explode true",
-    document: invalidDocument,
-    errors: [
+describe("Rule sort-parameter", () => {
+  let spectral = createWithRules(["sort-parameter"]);
+
+  beforeEach(() => {
+    spectral = createWithRules(["sort-parameter"]);
+  });
+
+  it("sort incorrectly uses explode true", async () => {
+    await expectRuleErrors(spectral, "sort-parameter", invalidDocument, [
       {
         message: "sort must be a query parameter using CSV array style.",
         path: ["paths", "/articles", "get", "parameters", "0", "explode"],
         severity: DiagnosticSeverity.Error,
       },
-    ],
-  },
-  {
-    name: "valid sort-parameter case",
-    document: validDocument,
-    errors: [],
-  },
-]);
+    ]);
+  });
+
+  it("valid sort-parameter case", async () => {
+    await expectRuleErrors(spectral, "sort-parameter", validDocument, []);
+  });
+});

@@ -1,5 +1,5 @@
 import { DiagnosticSeverity } from "@stoplight/types";
-import testRule from "./__helpers__/helper";
+import { createWithRules, expectRuleErrors } from "./__helpers__/helper";
 
 const invalidDocument = {
   openapi: "3.1.0",
@@ -42,11 +42,15 @@ validDocument.paths["/articles/{id}"].get.responses["200"].content[
   "application/vnd.api+json"
 ].schema.properties.links.properties.self.type = "string";
 
-testRule("links-object-schema", [
-  {
-    name: "link member is number",
-    document: invalidDocument,
-    errors: [
+describe("Rule links-object-schema", () => {
+  let spectral = createWithRules(["links-object-schema"]);
+
+  beforeEach(() => {
+    spectral = createWithRules(["links-object-schema"]);
+  });
+
+  it("link member is number", async () => {
+    await expectRuleErrors(spectral, "links-object-schema", invalidDocument, [
       {
         message: "Each link value must be a string URL or a link object.",
         path: [
@@ -66,11 +70,10 @@ testRule("links-object-schema", [
         ],
         severity: DiagnosticSeverity.Error,
       },
-    ],
-  },
-  {
-    name: "valid links-object-schema case",
-    document: validDocument,
-    errors: [],
-  },
-]);
+    ]);
+  });
+
+  it("valid links-object-schema case", async () => {
+    await expectRuleErrors(spectral, "links-object-schema", validDocument, []);
+  });
+});

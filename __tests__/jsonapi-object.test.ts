@@ -1,5 +1,5 @@
 import { DiagnosticSeverity } from "@stoplight/types";
-import testRule from "./__helpers__/helper";
+import { createWithRules, expectRuleErrors } from "./__helpers__/helper";
 
 const invalidDocument = {
   openapi: "3.1.0",
@@ -47,11 +47,15 @@ validDocument.paths["/articles/{id}"].get.responses["200"].content[
   type: "string",
 };
 
-testRule("jsonapi-object", [
-  {
-    name: "jsonapi contains unsupported property",
-    document: invalidDocument,
-    errors: [
+describe("Rule jsonapi-object", () => {
+  let spectral = createWithRules(["jsonapi-object"]);
+
+  beforeEach(() => {
+    spectral = createWithRules(["jsonapi-object"]);
+  });
+
+  it("jsonapi contains unsupported property", async () => {
+    await expectRuleErrors(spectral, "jsonapi-object", invalidDocument, [
       {
         message: "jsonapi must be an object with a string version.",
         path: [
@@ -69,11 +73,10 @@ testRule("jsonapi-object", [
         ],
         severity: DiagnosticSeverity.Error,
       },
-    ],
-  },
-  {
-    name: "valid jsonapi-object case",
-    document: validDocument,
-    errors: [],
-  },
-]);
+    ]);
+  });
+
+  it("valid jsonapi-object case", async () => {
+    await expectRuleErrors(spectral, "jsonapi-object", validDocument, []);
+  });
+});

@@ -1,5 +1,5 @@
 import { DiagnosticSeverity } from "@stoplight/types";
-import testRule from "./__helpers__/helper";
+import { createWithRules, expectRuleErrors } from "./__helpers__/helper";
 
 const invalidDocument = {
   openapi: "3.1.0",
@@ -43,11 +43,15 @@ validDocument.paths["/articles"].post.responses["201"].content[
   type: "object",
 };
 
-testRule("post-201-response", [
-  {
-    name: "201 response required contains invalid member",
-    document: invalidDocument,
-    errors: [
+describe("Rule post-201-response", () => {
+  let spectral = createWithRules(["post-201-response"]);
+
+  beforeEach(() => {
+    spectral = createWithRules(["post-201-response"]);
+  });
+
+  it("201 response required contains invalid member", async () => {
+    await expectRuleErrors(spectral, "post-201-response", invalidDocument, [
       {
         message: "POST 201 responses should include primary resource data.",
         path: [
@@ -64,11 +68,10 @@ testRule("post-201-response", [
         ],
         severity: DiagnosticSeverity.Information,
       },
-    ],
-  },
-  {
-    name: "valid post-201-response case",
-    document: validDocument,
-    errors: [],
-  },
-]);
+    ]);
+  });
+
+  it("valid post-201-response case", async () => {
+    await expectRuleErrors(spectral, "post-201-response", validDocument, []);
+  });
+});

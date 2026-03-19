@@ -1,5 +1,5 @@
 import { DiagnosticSeverity } from "@stoplight/types";
-import testRule from "./__helpers__/helper";
+import { createWithRules, expectRuleErrors } from "./__helpers__/helper";
 
 const invalidDocument = {
   openapi: "3.1.0",
@@ -55,11 +55,15 @@ validDocument.paths["/articles"].get.responses["400"].content[
   type: "string",
 };
 
-testRule("error-object-links", [
-  {
-    name: "error links lacks about link",
-    document: invalidDocument,
-    errors: [
+describe("Rule error-object-links", () => {
+  let spectral = createWithRules(["error-object-links"]);
+
+  beforeEach(() => {
+    spectral = createWithRules(["error-object-links"]);
+  });
+
+  it("error links lacks about link", async () => {
+    await expectRuleErrors(spectral, "error-object-links", invalidDocument, [
       {
         message: "Error object links must include about.",
         path: [
@@ -80,11 +84,10 @@ testRule("error-object-links", [
         ],
         severity: DiagnosticSeverity.Error,
       },
-    ],
-  },
-  {
-    name: "valid error-object-links case",
-    document: validDocument,
-    errors: [],
-  },
-]);
+    ]);
+  });
+
+  it("valid error-object-links case", async () => {
+    await expectRuleErrors(spectral, "error-object-links", validDocument, []);
+  });
+});

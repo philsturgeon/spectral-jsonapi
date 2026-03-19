@@ -1,5 +1,5 @@
 import { DiagnosticSeverity } from "@stoplight/types";
-import testRule from "./__helpers__/helper";
+import { createWithRules, expectRuleErrors } from "./__helpers__/helper";
 
 const invalidDocument = {
   openapi: "3.1.0",
@@ -50,11 +50,15 @@ validDocument.paths["/articles"].get.responses["400"].content[
   type: "string",
 };
 
-testRule("error-object-schema", [
-  {
-    name: "error object includes unsupported member",
-    document: invalidDocument,
-    errors: [
+describe("Rule error-object-schema", () => {
+  let spectral = createWithRules(["error-object-schema"]);
+
+  beforeEach(() => {
+    spectral = createWithRules(["error-object-schema"]);
+  });
+
+  it("error object includes unsupported member", async () => {
+    await expectRuleErrors(spectral, "error-object-schema", invalidDocument, [
       {
         message: "Error objects must follow the JSON:API error object schema.",
         path: [
@@ -74,11 +78,10 @@ testRule("error-object-schema", [
         ],
         severity: DiagnosticSeverity.Error,
       },
-    ],
-  },
-  {
-    name: "valid error-object-schema case",
-    document: validDocument,
-    errors: [],
-  },
-]);
+    ]);
+  });
+
+  it("valid error-object-schema case", async () => {
+    await expectRuleErrors(spectral, "error-object-schema", validDocument, []);
+  });
+});

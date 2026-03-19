@@ -1,5 +1,5 @@
 import { DiagnosticSeverity } from "@stoplight/types";
-import testRule from "./__helpers__/helper";
+import { createWithRules, expectRuleErrors } from "./__helpers__/helper";
 
 const invalidDocument = {
   openapi: "3.1.0",
@@ -37,11 +37,15 @@ validDocument.paths["/articles/{id}"].get.responses["200"].content[
   "application/vnd.api+json"
 ].schema.properties.links.type = "object";
 
-testRule("links-object", [
-  {
-    name: "links is typed as array",
-    document: invalidDocument,
-    errors: [
+describe("Rule links-object", () => {
+  let spectral = createWithRules(["links-object"]);
+
+  beforeEach(() => {
+    spectral = createWithRules(["links-object"]);
+  });
+
+  it("links is typed as array", async () => {
+    await expectRuleErrors(spectral, "links-object", invalidDocument, [
       {
         message: "links must be an object.",
         path: [
@@ -59,11 +63,10 @@ testRule("links-object", [
         ],
         severity: DiagnosticSeverity.Error,
       },
-    ],
-  },
-  {
-    name: "valid links-object case",
-    document: validDocument,
-    errors: [],
-  },
-]);
+    ]);
+  });
+
+  it("valid links-object case", async () => {
+    await expectRuleErrors(spectral, "links-object", validDocument, []);
+  });
+});

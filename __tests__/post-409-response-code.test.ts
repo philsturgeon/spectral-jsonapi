@@ -1,5 +1,5 @@
 import { DiagnosticSeverity } from "@stoplight/types";
-import testRule from "./__helpers__/helper";
+import { createWithRules, expectRuleErrors } from "./__helpers__/helper";
 
 const invalidDocument = {
   openapi: "3.1.0",
@@ -39,21 +39,34 @@ validDocument.paths["/articles"].post.responses["409"] = {
   description: "conflict",
 };
 
-testRule("post-409-response-code", [
-  {
-    name: "post missing 409 response",
-    document: invalidDocument,
-    errors: [
-      {
-        message: "POST operations must define a 409 conflict response.",
-        path: ["paths", "/articles", "post", "responses"],
-        severity: DiagnosticSeverity.Error,
-      },
-    ],
-  },
-  {
-    name: "valid post-409-response-code case",
-    document: validDocument,
-    errors: [],
-  },
-]);
+describe("Rule post-409-response-code", () => {
+  let spectral = createWithRules(["post-409-response-code"]);
+
+  beforeEach(() => {
+    spectral = createWithRules(["post-409-response-code"]);
+  });
+
+  it("post missing 409 response", async () => {
+    await expectRuleErrors(
+      spectral,
+      "post-409-response-code",
+      invalidDocument,
+      [
+        {
+          message: "POST operations must define a 409 conflict response.",
+          path: ["paths", "/articles", "post", "responses"],
+          severity: DiagnosticSeverity.Error,
+        },
+      ],
+    );
+  });
+
+  it("valid post-409-response-code case", async () => {
+    await expectRuleErrors(
+      spectral,
+      "post-409-response-code",
+      validDocument,
+      [],
+    );
+  });
+});

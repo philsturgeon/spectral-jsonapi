@@ -1,5 +1,5 @@
 import { DiagnosticSeverity } from "@stoplight/types";
-import testRule from "./__helpers__/helper";
+import { createWithRules, expectRuleErrors } from "./__helpers__/helper";
 
 const invalidDocument = {
   openapi: "3.1.0",
@@ -45,33 +45,46 @@ validDocument.paths["/articles/{id}"].patch.requestBody.content[
   "application/vnd.api+json"
 ].schema.properties.data.type = "object";
 
-testRule("patch-requests-single-object", [
-  {
-    name: "patch data is incorrectly an array",
-    document: invalidDocument,
-    errors: [
-      {
-        message:
-          "PATCH request data must be a single resource object, not an array.",
-        path: [
-          "paths",
-          "/articles/{id}",
-          "patch",
-          "requestBody",
-          "content",
-          "application/vnd.api+json",
-          "schema",
-          "properties",
-          "data",
-          "type",
-        ],
-        severity: DiagnosticSeverity.Error,
-      },
-    ],
-  },
-  {
-    name: "valid patch-requests-single-object case",
-    document: validDocument,
-    errors: [],
-  },
-]);
+describe("Rule patch-requests-single-object", () => {
+  let spectral = createWithRules(["patch-requests-single-object"]);
+
+  beforeEach(() => {
+    spectral = createWithRules(["patch-requests-single-object"]);
+  });
+
+  it("patch data is incorrectly an array", async () => {
+    await expectRuleErrors(
+      spectral,
+      "patch-requests-single-object",
+      invalidDocument,
+      [
+        {
+          message:
+            "PATCH request data must be a single resource object, not an array.",
+          path: [
+            "paths",
+            "/articles/{id}",
+            "patch",
+            "requestBody",
+            "content",
+            "application/vnd.api+json",
+            "schema",
+            "properties",
+            "data",
+            "type",
+          ],
+          severity: DiagnosticSeverity.Error,
+        },
+      ],
+    );
+  });
+
+  it("valid patch-requests-single-object case", async () => {
+    await expectRuleErrors(
+      spectral,
+      "patch-requests-single-object",
+      validDocument,
+      [],
+    );
+  });
+});

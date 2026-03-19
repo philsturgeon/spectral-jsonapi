@@ -1,5 +1,5 @@
 import { DiagnosticSeverity } from "@stoplight/types";
-import testRule from "./__helpers__/helper";
+import { createWithRules, expectRuleErrors } from "./__helpers__/helper";
 
 const invalidDocument = {
   openapi: "3.1.0",
@@ -42,21 +42,34 @@ validDocument.paths["/articles/{id}"].patch.responses["409"] = {
   description: "conflict",
 };
 
-testRule("patch-409-response-code", [
-  {
-    name: "patch missing 409 response",
-    document: invalidDocument,
-    errors: [
-      {
-        message: "PATCH operations must define a 409 conflict response.",
-        path: ["paths", "/articles/{id}", "patch", "responses"],
-        severity: DiagnosticSeverity.Error,
-      },
-    ],
-  },
-  {
-    name: "valid patch-409-response-code case",
-    document: validDocument,
-    errors: [],
-  },
-]);
+describe("Rule patch-409-response-code", () => {
+  let spectral = createWithRules(["patch-409-response-code"]);
+
+  beforeEach(() => {
+    spectral = createWithRules(["patch-409-response-code"]);
+  });
+
+  it("patch missing 409 response", async () => {
+    await expectRuleErrors(
+      spectral,
+      "patch-409-response-code",
+      invalidDocument,
+      [
+        {
+          message: "PATCH operations must define a 409 conflict response.",
+          path: ["paths", "/articles/{id}", "patch", "responses"],
+          severity: DiagnosticSeverity.Error,
+        },
+      ],
+    );
+  });
+
+  it("valid patch-409-response-code case", async () => {
+    await expectRuleErrors(
+      spectral,
+      "patch-409-response-code",
+      validDocument,
+      [],
+    );
+  });
+});

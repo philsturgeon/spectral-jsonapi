@@ -1,5 +1,5 @@
 import { DiagnosticSeverity } from "@stoplight/types";
-import testRule from "./__helpers__/helper";
+import { createWithRules, expectRuleErrors } from "./__helpers__/helper";
 
 const invalidDocument = {
   openapi: "3.1.0",
@@ -53,36 +53,50 @@ delete validDocument.paths["/articles/{id}"].get.responses["200"].content[
   "application/vnd.api+json"
 ].schema.properties.data.properties.attributes.properties.id;
 
-testRule("resource-object-reserved-fields", [
-  {
-    name: "attributes contains reserved id",
-    document: invalidDocument,
-    errors: [
-      {
-        message: "Do not define id or type inside attributes or relationships.",
-        path: [
-          "paths",
-          "/articles/{id}",
-          "get",
-          "responses",
-          "200",
-          "content",
-          "application/vnd.api+json",
-          "schema",
-          "properties",
-          "data",
-          "properties",
-          "attributes",
-          "properties",
-          "id",
-        ],
-        severity: DiagnosticSeverity.Error,
-      },
-    ],
-  },
-  {
-    name: "valid resource-object-reserved-fields case",
-    document: validDocument,
-    errors: [],
-  },
-]);
+describe("Rule resource-object-reserved-fields", () => {
+  let spectral = createWithRules(["resource-object-reserved-fields"]);
+
+  beforeEach(() => {
+    spectral = createWithRules(["resource-object-reserved-fields"]);
+  });
+
+  it("attributes contains reserved id", async () => {
+    await expectRuleErrors(
+      spectral,
+      "resource-object-reserved-fields",
+      invalidDocument,
+      [
+        {
+          message:
+            "Do not define id or type inside attributes or relationships.",
+          path: [
+            "paths",
+            "/articles/{id}",
+            "get",
+            "responses",
+            "200",
+            "content",
+            "application/vnd.api+json",
+            "schema",
+            "properties",
+            "data",
+            "properties",
+            "attributes",
+            "properties",
+            "id",
+          ],
+          severity: DiagnosticSeverity.Error,
+        },
+      ],
+    );
+  });
+
+  it("valid resource-object-reserved-fields case", async () => {
+    await expectRuleErrors(
+      spectral,
+      "resource-object-reserved-fields",
+      validDocument,
+      [],
+    );
+  });
+});

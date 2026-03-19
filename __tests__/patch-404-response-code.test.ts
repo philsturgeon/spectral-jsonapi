@@ -1,5 +1,5 @@
 import { DiagnosticSeverity } from "@stoplight/types";
-import testRule from "./__helpers__/helper";
+import { createWithRules, expectRuleErrors } from "./__helpers__/helper";
 
 const invalidDocument = {
   openapi: "3.1.0",
@@ -39,21 +39,34 @@ validDocument.paths["/articles/{id}"].patch.responses["404"] = {
   description: "not found",
 };
 
-testRule("patch-404-response-code", [
-  {
-    name: "patch missing 404 response",
-    document: invalidDocument,
-    errors: [
-      {
-        message: "PATCH operations must define a 404 response.",
-        path: ["paths", "/articles/{id}", "patch", "responses"],
-        severity: DiagnosticSeverity.Error,
-      },
-    ],
-  },
-  {
-    name: "valid patch-404-response-code case",
-    document: validDocument,
-    errors: [],
-  },
-]);
+describe("Rule patch-404-response-code", () => {
+  let spectral = createWithRules(["patch-404-response-code"]);
+
+  beforeEach(() => {
+    spectral = createWithRules(["patch-404-response-code"]);
+  });
+
+  it("patch missing 404 response", async () => {
+    await expectRuleErrors(
+      spectral,
+      "patch-404-response-code",
+      invalidDocument,
+      [
+        {
+          message: "PATCH operations must define a 404 response.",
+          path: ["paths", "/articles/{id}", "patch", "responses"],
+          severity: DiagnosticSeverity.Error,
+        },
+      ],
+    );
+  });
+
+  it("valid patch-404-response-code case", async () => {
+    await expectRuleErrors(
+      spectral,
+      "patch-404-response-code",
+      validDocument,
+      [],
+    );
+  });
+});

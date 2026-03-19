@@ -1,5 +1,5 @@
 import { DiagnosticSeverity } from "@stoplight/types";
-import testRule from "./__helpers__/helper";
+import { createWithRules, expectRuleErrors } from "./__helpers__/helper";
 
 const invalidDocument = {
   openapi: "3.1.0",
@@ -59,11 +59,15 @@ validDocument.paths["/articles/{id}"].patch.requestBody.content[
 ].schema.properties.data.properties.relationships.properties.author.required[0] =
   "data";
 
-testRule("patch-relationships", [
-  {
-    name: "patch relationship required contains invalid member",
-    document: invalidDocument,
-    errors: [
+describe("Rule patch-relationships", () => {
+  let spectral = createWithRules(["patch-relationships"]);
+
+  beforeEach(() => {
+    spectral = createWithRules(["patch-relationships"]);
+  });
+
+  it("patch relationship required contains invalid member", async () => {
+    await expectRuleErrors(spectral, "patch-relationships", invalidDocument, [
       {
         message: "If PATCH relationships are present, they must include data.",
         path: [
@@ -85,11 +89,10 @@ testRule("patch-relationships", [
         ],
         severity: DiagnosticSeverity.Error,
       },
-    ],
-  },
-  {
-    name: "valid patch-relationships case",
-    document: validDocument,
-    errors: [],
-  },
-]);
+    ]);
+  });
+
+  it("valid patch-relationships case", async () => {
+    await expectRuleErrors(spectral, "patch-relationships", validDocument, []);
+  });
+});

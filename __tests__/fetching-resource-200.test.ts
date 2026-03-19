@@ -1,46 +1,59 @@
 import { DiagnosticSeverity } from "@stoplight/types";
-import testRule from "./__helpers__/helper";
+import { createWithRules, expectRuleErrors } from "./__helpers__/helper";
 
-testRule("fetching-resource-200", [
-  {
-    name: "valid get includes 200",
-    document: {
-      openapi: "3.1.0",
-      info: { title: "Test", version: "1.0.0" },
-      paths: {
-        "/tickets/{id}": {
-          get: {
-            responses: {
-              "200": { description: "ok" },
-              "404": { description: "not found" },
-            },
-          },
-        },
-      },
-    },
-    errors: [],
-  },
-  {
-    name: "invalid get missing 200",
-    document: {
-      openapi: "3.1.0",
-      info: { title: "Test", version: "1.0.0" },
-      paths: {
-        "/tickets/{id}": {
-          get: {
-            responses: {
-              "404": { description: "not found" },
-            },
-          },
-        },
-      },
-    },
-    errors: [
+describe("Rule fetching-resource-200", () => {
+  let spectral = createWithRules(["fetching-resource-200"]);
+
+  beforeEach(() => {
+    spectral = createWithRules(["fetching-resource-200"]);
+  });
+
+  it("valid get includes 200", async () => {
+    await expectRuleErrors(
+      spectral,
+      "fetching-resource-200",
       {
-        message: "GET operations must define a 200 response.",
-        path: ["paths", "/tickets/{id}", "get", "responses"],
-        severity: DiagnosticSeverity.Error,
+        openapi: "3.1.0",
+        info: { title: "Test", version: "1.0.0" },
+        paths: {
+          "/tickets/{id}": {
+            get: {
+              responses: {
+                "200": { description: "ok" },
+                "404": { description: "not found" },
+              },
+            },
+          },
+        },
       },
-    ],
-  },
-]);
+      [],
+    );
+  });
+
+  it("invalid get missing 200", async () => {
+    await expectRuleErrors(
+      spectral,
+      "fetching-resource-200",
+      {
+        openapi: "3.1.0",
+        info: { title: "Test", version: "1.0.0" },
+        paths: {
+          "/tickets/{id}": {
+            get: {
+              responses: {
+                "404": { description: "not found" },
+              },
+            },
+          },
+        },
+      },
+      [
+        {
+          message: "GET operations must define a 200 response.",
+          path: ["paths", "/tickets/{id}", "get", "responses"],
+          severity: DiagnosticSeverity.Error,
+        },
+      ],
+    );
+  });
+});

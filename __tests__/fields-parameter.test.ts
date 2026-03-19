@@ -1,5 +1,5 @@
 import { DiagnosticSeverity } from "@stoplight/types";
-import testRule from "./__helpers__/helper";
+import { createWithRules, expectRuleErrors } from "./__helpers__/helper";
 
 const invalidDocument = {
   openapi: "3.1.0",
@@ -33,21 +33,24 @@ const invalidDocument = {
 const validDocument = structuredClone(invalidDocument);
 validDocument.paths["/articles"].get.parameters[0].style = "deepObject";
 
-testRule("fields-parameter", [
-  {
-    name: "fields incorrectly uses form style",
-    document: invalidDocument,
-    errors: [
+describe("Rule fields-parameter", () => {
+  let spectral = createWithRules(["fields-parameter"]);
+
+  beforeEach(() => {
+    spectral = createWithRules(["fields-parameter"]);
+  });
+
+  it("fields incorrectly uses form style", async () => {
+    await expectRuleErrors(spectral, "fields-parameter", invalidDocument, [
       {
         message: "fields must be a query parameter using deepObject style.",
         path: ["paths", "/articles", "get", "parameters", "0", "style"],
         severity: DiagnosticSeverity.Error,
       },
-    ],
-  },
-  {
-    name: "valid fields-parameter case",
-    document: validDocument,
-    errors: [],
-  },
-]);
+    ]);
+  });
+
+  it("valid fields-parameter case", async () => {
+    await expectRuleErrors(spectral, "fields-parameter", validDocument, []);
+  });
+});

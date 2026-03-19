@@ -1,5 +1,5 @@
 import { DiagnosticSeverity } from "@stoplight/types";
-import testRule from "./__helpers__/helper";
+import { createWithRules, expectRuleErrors } from "./__helpers__/helper";
 
 const invalidDocument = {
   openapi: "3.1.0",
@@ -67,40 +67,53 @@ delete validDocument.paths["/articles/{id}"].get.responses["200"].content[
 ].schema.properties.data.properties.relationships.properties.author.properties
   .data.properties.attributes;
 
-testRule("relationship-data-properties", [
-  {
-    name: "relationship data includes attributes",
-    document: invalidDocument,
-    errors: [
-      {
-        message: "Relationship data may only include id, type, and meta.",
-        path: [
-          "paths",
-          "/articles/{id}",
-          "get",
-          "responses",
-          "200",
-          "content",
-          "application/vnd.api+json",
-          "schema",
-          "properties",
-          "data",
-          "properties",
-          "relationships",
-          "properties",
-          "author",
-          "properties",
-          "data",
-          "properties",
-          "attributes",
-        ],
-        severity: DiagnosticSeverity.Error,
-      },
-    ],
-  },
-  {
-    name: "valid relationship-data-properties case",
-    document: validDocument,
-    errors: [],
-  },
-]);
+describe("Rule relationship-data-properties", () => {
+  let spectral = createWithRules(["relationship-data-properties"]);
+
+  beforeEach(() => {
+    spectral = createWithRules(["relationship-data-properties"]);
+  });
+
+  it("relationship data includes attributes", async () => {
+    await expectRuleErrors(
+      spectral,
+      "relationship-data-properties",
+      invalidDocument,
+      [
+        {
+          message: "Relationship data may only include id, type, and meta.",
+          path: [
+            "paths",
+            "/articles/{id}",
+            "get",
+            "responses",
+            "200",
+            "content",
+            "application/vnd.api+json",
+            "schema",
+            "properties",
+            "data",
+            "properties",
+            "relationships",
+            "properties",
+            "author",
+            "properties",
+            "data",
+            "properties",
+            "attributes",
+          ],
+          severity: DiagnosticSeverity.Error,
+        },
+      ],
+    );
+  });
+
+  it("valid relationship-data-properties case", async () => {
+    await expectRuleErrors(
+      spectral,
+      "relationship-data-properties",
+      validDocument,
+      [],
+    );
+  });
+});

@@ -1,5 +1,5 @@
 import { DiagnosticSeverity } from "@stoplight/types";
-import testRule from "./__helpers__/helper";
+import { createWithRules, expectRuleErrors } from "./__helpers__/helper";
 
 const invalidDocument = {
   openapi: "3.1.0",
@@ -32,11 +32,15 @@ validDocument.paths["/articles/{id}"].get.responses["200"].content[
   "application/vnd.api+json"
 ].schema.type = "object";
 
-testRule("top-level-json-object", [
-  {
-    name: "top-level schema is not an object",
-    document: invalidDocument,
-    errors: [
+describe("Rule top-level-json-object", () => {
+  let spectral = createWithRules(["top-level-json-object"]);
+
+  beforeEach(() => {
+    spectral = createWithRules(["top-level-json-object"]);
+  });
+
+  it("top-level schema is not an object", async () => {
+    await expectRuleErrors(spectral, "top-level-json-object", invalidDocument, [
       {
         message:
           "Request and response bodies must have a top-level JSON object.",
@@ -53,11 +57,15 @@ testRule("top-level-json-object", [
         ],
         severity: DiagnosticSeverity.Error,
       },
-    ],
-  },
-  {
-    name: "valid top-level-json-object case",
-    document: validDocument,
-    errors: [],
-  },
-]);
+    ]);
+  });
+
+  it("valid top-level-json-object case", async () => {
+    await expectRuleErrors(
+      spectral,
+      "top-level-json-object",
+      validDocument,
+      [],
+    );
+  });
+});

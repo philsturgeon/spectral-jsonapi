@@ -1,5 +1,5 @@
 import { DiagnosticSeverity } from "@stoplight/types";
-import testRule from "./__helpers__/helper";
+import { createWithRules, expectRuleErrors } from "./__helpers__/helper";
 
 const invalidDocument = {
   openapi: "3.1.0",
@@ -30,21 +30,24 @@ validDocument.paths["/articles/{id}"].patch = {
   },
 };
 
-testRule("put-disallowed", [
-  {
-    name: "put operation is present",
-    document: invalidDocument,
-    errors: [
+describe("Rule put-disallowed", () => {
+  let spectral = createWithRules(["put-disallowed"]);
+
+  beforeEach(() => {
+    spectral = createWithRules(["put-disallowed"]);
+  });
+
+  it("put operation is present", async () => {
+    await expectRuleErrors(spectral, "put-disallowed", invalidDocument, [
       {
         message: "PUT is not allowed by JSON:API; use PATCH.",
         path: ["paths", "/articles/{id}", "put"],
         severity: DiagnosticSeverity.Error,
       },
-    ],
-  },
-  {
-    name: "valid put-disallowed case",
-    document: validDocument,
-    errors: [],
-  },
-]);
+    ]);
+  });
+
+  it("valid put-disallowed case", async () => {
+    await expectRuleErrors(spectral, "put-disallowed", validDocument, []);
+  });
+});

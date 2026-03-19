@@ -1,5 +1,5 @@
 import { DiagnosticSeverity } from "@stoplight/types";
-import testRule from "./__helpers__/helper";
+import { createWithRules, expectRuleErrors } from "./__helpers__/helper";
 
 const invalidDocument = {
   openapi: "3.1.0",
@@ -48,35 +48,48 @@ delete validDocument.paths["/articles/{id}"].get.responses["200"].content[
   "application/vnd.api+json"
 ].schema.properties.data.properties.name;
 
-testRule("resource-object-properties", [
-  {
-    name: "resource object includes unknown field",
-    document: invalidDocument,
-    errors: [
-      {
-        message:
-          "Resource objects may only use id, type, attributes, relationships, links, and meta.",
-        path: [
-          "paths",
-          "/articles/{id}",
-          "get",
-          "responses",
-          "200",
-          "content",
-          "application/vnd.api+json",
-          "schema",
-          "properties",
-          "data",
-          "properties",
-          "name",
-        ],
-        severity: DiagnosticSeverity.Error,
-      },
-    ],
-  },
-  {
-    name: "valid resource-object-properties case",
-    document: validDocument,
-    errors: [],
-  },
-]);
+describe("Rule resource-object-properties", () => {
+  let spectral = createWithRules(["resource-object-properties"]);
+
+  beforeEach(() => {
+    spectral = createWithRules(["resource-object-properties"]);
+  });
+
+  it("resource object includes unknown field", async () => {
+    await expectRuleErrors(
+      spectral,
+      "resource-object-properties",
+      invalidDocument,
+      [
+        {
+          message:
+            "Resource objects may only use id, type, attributes, relationships, links, and meta.",
+          path: [
+            "paths",
+            "/articles/{id}",
+            "get",
+            "responses",
+            "200",
+            "content",
+            "application/vnd.api+json",
+            "schema",
+            "properties",
+            "data",
+            "properties",
+            "name",
+          ],
+          severity: DiagnosticSeverity.Error,
+        },
+      ],
+    );
+  });
+
+  it("valid resource-object-properties case", async () => {
+    await expectRuleErrors(
+      spectral,
+      "resource-object-properties",
+      validDocument,
+      [],
+    );
+  });
+});

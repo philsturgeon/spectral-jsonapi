@@ -1,5 +1,5 @@
 import { DiagnosticSeverity } from "@stoplight/types";
-import testRule from "./__helpers__/helper";
+import { createWithRules, expectRuleErrors } from "./__helpers__/helper";
 
 const invalidDocument = {
   openapi: "3.1.0",
@@ -59,11 +59,15 @@ validDocument.paths["/articles"].post.requestBody.content[
 ].schema.properties.data.properties.relationships.properties.author.required[0] =
   "data";
 
-testRule("post-relationships", [
-  {
-    name: "post relationship required contains invalid member",
-    document: invalidDocument,
-    errors: [
+describe("Rule post-relationships", () => {
+  let spectral = createWithRules(["post-relationships"]);
+
+  beforeEach(() => {
+    spectral = createWithRules(["post-relationships"]);
+  });
+
+  it("post relationship required contains invalid member", async () => {
+    await expectRuleErrors(spectral, "post-relationships", invalidDocument, [
       {
         message: "If POST relationships are present, they must include data.",
         path: [
@@ -85,11 +89,10 @@ testRule("post-relationships", [
         ],
         severity: DiagnosticSeverity.Error,
       },
-    ],
-  },
-  {
-    name: "valid post-relationships case",
-    document: validDocument,
-    errors: [],
-  },
-]);
+    ]);
+  });
+
+  it("valid post-relationships case", async () => {
+    await expectRuleErrors(spectral, "post-relationships", validDocument, []);
+  });
+});

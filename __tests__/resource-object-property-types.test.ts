@@ -1,5 +1,5 @@
 import { DiagnosticSeverity } from "@stoplight/types";
-import testRule from "./__helpers__/helper";
+import { createWithRules, expectRuleErrors } from "./__helpers__/helper";
 
 const invalidDocument = {
   openapi: "3.1.0",
@@ -45,35 +45,48 @@ validDocument.paths["/articles/{id}"].get.responses["200"].content[
   "application/vnd.api+json"
 ].schema.properties.data.properties.id.type = "string";
 
-testRule("resource-object-property-types", [
-  {
-    name: "resource id typed as integer",
-    document: invalidDocument,
-    errors: [
-      {
-        message: "Resource object id and type must both be strings.",
-        path: [
-          "paths",
-          "/articles/{id}",
-          "get",
-          "responses",
-          "200",
-          "content",
-          "application/vnd.api+json",
-          "schema",
-          "properties",
-          "data",
-          "properties",
-          "id",
-          "type",
-        ],
-        severity: DiagnosticSeverity.Error,
-      },
-    ],
-  },
-  {
-    name: "valid resource-object-property-types case",
-    document: validDocument,
-    errors: [],
-  },
-]);
+describe("Rule resource-object-property-types", () => {
+  let spectral = createWithRules(["resource-object-property-types"]);
+
+  beforeEach(() => {
+    spectral = createWithRules(["resource-object-property-types"]);
+  });
+
+  it("resource id typed as integer", async () => {
+    await expectRuleErrors(
+      spectral,
+      "resource-object-property-types",
+      invalidDocument,
+      [
+        {
+          message: "Resource object id and type must both be strings.",
+          path: [
+            "paths",
+            "/articles/{id}",
+            "get",
+            "responses",
+            "200",
+            "content",
+            "application/vnd.api+json",
+            "schema",
+            "properties",
+            "data",
+            "properties",
+            "id",
+            "type",
+          ],
+          severity: DiagnosticSeverity.Error,
+        },
+      ],
+    );
+  });
+
+  it("valid resource-object-property-types case", async () => {
+    await expectRuleErrors(
+      spectral,
+      "resource-object-property-types",
+      validDocument,
+      [],
+    );
+  });
+});

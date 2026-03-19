@@ -1,5 +1,5 @@
 import { DiagnosticSeverity } from "@stoplight/types";
-import testRule from "./__helpers__/helper";
+import { createWithRules, expectRuleErrors } from "./__helpers__/helper";
 
 const invalidDocument = {
   openapi: "3.1.0",
@@ -37,11 +37,15 @@ validDocument.paths["/articles/{id}"].get.responses["200"].content[
   "application/vnd.api+json"
 ].schema.properties.meta.type = "object";
 
-testRule("meta-object", [
-  {
-    name: "meta is typed as string",
-    document: invalidDocument,
-    errors: [
+describe("Rule meta-object", () => {
+  let spectral = createWithRules(["meta-object"]);
+
+  beforeEach(() => {
+    spectral = createWithRules(["meta-object"]);
+  });
+
+  it("meta is typed as string", async () => {
+    await expectRuleErrors(spectral, "meta-object", invalidDocument, [
       {
         message: "meta must be an object.",
         path: [
@@ -59,11 +63,10 @@ testRule("meta-object", [
         ],
         severity: DiagnosticSeverity.Error,
       },
-    ],
-  },
-  {
-    name: "valid meta-object case",
-    document: validDocument,
-    errors: [],
-  },
-]);
+    ]);
+  });
+
+  it("valid meta-object case", async () => {
+    await expectRuleErrors(spectral, "meta-object", validDocument, []);
+  });
+});

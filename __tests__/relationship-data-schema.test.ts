@@ -1,5 +1,5 @@
 import { DiagnosticSeverity } from "@stoplight/types";
-import testRule from "./__helpers__/helper";
+import { createWithRules, expectRuleErrors } from "./__helpers__/helper";
 
 const sharedRelationshipSchemas = {
   BaseModel: {
@@ -146,143 +146,160 @@ validDocument.paths["/articles/{id}"].get.responses["200"].content[
 ].schema.properties.data.properties.relationships.properties.author.properties.data.properties.id.type =
   "string";
 
-testRule("relationship-data-schema", [
-  {
-    name: "relationship data id is not string",
-    document: invalidDocument,
-    errors: [
-      {
-        message:
-          "Relationship data entries must match the resource identifier schema.",
-        path: [
-          "paths",
-          "/articles/{id}",
-          "get",
-          "responses",
-          "200",
-          "content",
-          "application/vnd.api+json",
-          "schema",
-          "properties",
-          "data",
-          "properties",
-          "relationships",
-          "properties",
-          "author",
-          "properties",
-          "data",
-          "properties",
-        ],
-        severity: DiagnosticSeverity.Error,
-      },
-      {
-        message:
-          "Relationship data entries must match the resource identifier schema.",
-        path: [
-          "paths",
-          "/articles/{id}",
-          "get",
-          "responses",
-          "200",
-          "content",
-          "application/vnd.api+json",
-          "schema",
-          "properties",
-          "data",
-          "properties",
-          "relationships",
-          "properties",
-          "author",
-          "properties",
-          "data",
-          "properties",
-          "id",
-          "type",
-        ],
-        severity: DiagnosticSeverity.Error,
-      },
-      {
-        message:
-          "Relationship data entries must match the resource identifier schema.",
-        path: [
-          "paths",
-          "/articles/{id}",
-          "get",
-          "responses",
-          "200",
-          "content",
-          "application/vnd.api+json",
-          "schema",
-          "properties",
-          "data",
-          "properties",
-          "relationships",
-          "properties",
-          "author",
-          "properties",
-          "data",
-          "properties",
-          "type",
-        ],
-        severity: DiagnosticSeverity.Error,
-      },
-    ],
-  },
-  {
-    name: "valid relationship-data-schema case",
-    document: validDocument,
-    errors: [],
-  },
-  {
-    name: "valid: allOf relationship data narrowed in second member",
-    document: componentResponseDocument("IncludedQuestionnaire", {
-      ...sharedRelationshipSchemas,
-      IncludedQuestionnaire: {
-        allOf: [
-          {
-            $ref: "#/components/schemas/BaseModel",
-          },
-          {
-            type: "object",
-            properties: {
-              type: {
-                type: "string",
-                enum: ["questionnaire"],
-              },
-              relationships: {
-                type: "object",
-                properties: {
-                  sections: {
-                    allOf: [
-                      {
-                        $ref: "#/components/schemas/RelationshipPlural",
-                      },
-                      {
-                        type: "object",
-                        properties: {
-                          data: {
-                            type: "array",
-                            items: {
-                              type: "object",
-                              properties: {
-                                type: {
-                                  type: "string",
-                                  enum: ["questionnaire_section"],
+describe("Rule relationship-data-schema", () => {
+  let spectral = createWithRules(["relationship-data-schema"]);
+
+  beforeEach(() => {
+    spectral = createWithRules(["relationship-data-schema"]);
+  });
+
+  it("relationship data id is not string", async () => {
+    await expectRuleErrors(
+      spectral,
+      "relationship-data-schema",
+      invalidDocument,
+      [
+        {
+          message:
+            "Relationship data entries must match the resource identifier schema.",
+          path: [
+            "paths",
+            "/articles/{id}",
+            "get",
+            "responses",
+            "200",
+            "content",
+            "application/vnd.api+json",
+            "schema",
+            "properties",
+            "data",
+            "properties",
+            "relationships",
+            "properties",
+            "author",
+            "properties",
+            "data",
+            "properties",
+          ],
+          severity: DiagnosticSeverity.Error,
+        },
+        {
+          message:
+            "Relationship data entries must match the resource identifier schema.",
+          path: [
+            "paths",
+            "/articles/{id}",
+            "get",
+            "responses",
+            "200",
+            "content",
+            "application/vnd.api+json",
+            "schema",
+            "properties",
+            "data",
+            "properties",
+            "relationships",
+            "properties",
+            "author",
+            "properties",
+            "data",
+            "properties",
+            "id",
+            "type",
+          ],
+          severity: DiagnosticSeverity.Error,
+        },
+        {
+          message:
+            "Relationship data entries must match the resource identifier schema.",
+          path: [
+            "paths",
+            "/articles/{id}",
+            "get",
+            "responses",
+            "200",
+            "content",
+            "application/vnd.api+json",
+            "schema",
+            "properties",
+            "data",
+            "properties",
+            "relationships",
+            "properties",
+            "author",
+            "properties",
+            "data",
+            "properties",
+            "type",
+          ],
+          severity: DiagnosticSeverity.Error,
+        },
+      ],
+    );
+  });
+
+  it("valid relationship-data-schema case", async () => {
+    await expectRuleErrors(
+      spectral,
+      "relationship-data-schema",
+      validDocument,
+      [],
+    );
+  });
+
+  it("valid: allOf relationship data narrowed in second member", async () => {
+    await expectRuleErrors(
+      spectral,
+      "relationship-data-schema",
+      componentResponseDocument("IncludedQuestionnaire", {
+        ...sharedRelationshipSchemas,
+        IncludedQuestionnaire: {
+          allOf: [
+            {
+              $ref: "#/components/schemas/BaseModel",
+            },
+            {
+              type: "object",
+              properties: {
+                type: {
+                  type: "string",
+                  enum: ["questionnaire"],
+                },
+                relationships: {
+                  type: "object",
+                  properties: {
+                    sections: {
+                      allOf: [
+                        {
+                          $ref: "#/components/schemas/RelationshipPlural",
+                        },
+                        {
+                          type: "object",
+                          properties: {
+                            data: {
+                              type: "array",
+                              items: {
+                                type: "object",
+                                properties: {
+                                  type: {
+                                    type: "string",
+                                    enum: ["questionnaire_section"],
+                                  },
                                 },
                               },
                             },
                           },
                         },
-                      },
-                    ],
+                      ],
+                    },
                   },
                 },
               },
             },
-          },
-        ],
-      },
-    }),
-    errors: [],
-  },
-]);
+          ],
+        },
+      }),
+      [],
+    );
+  });
+});
