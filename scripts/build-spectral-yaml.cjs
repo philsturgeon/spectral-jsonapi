@@ -44,6 +44,13 @@ const formatNameByMeta = new Map(
     }),
 );
 
+const severityNameByValue = new Map([
+  [0, "error"],
+  [1, "warn"],
+  [2, "info"],
+  [3, "hint"],
+]);
+
 function normalize(value, atPath = "$") {
   if (Array.isArray(value)) {
     return value.map((nested, index) =>
@@ -81,6 +88,11 @@ function normalize(value, atPath = "$") {
 
     const out = {};
     for (const [key, nested] of Object.entries(value)) {
+      if (key === "severity" && typeof nested === "number") {
+        out[key] = severityNameByValue.get(nested) ?? nested;
+        continue;
+      }
+
       out[key] = normalize(nested, `${atPath}.${key}`);
     }
     return out;
