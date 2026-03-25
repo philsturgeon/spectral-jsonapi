@@ -688,7 +688,7 @@ rules:
           - string
   resource-object-reserved-fields:
     description: |-
-      `id` and `type` **MUST NOT** exist in `attributes` or `relationships`
+      `id` and `type` **MUST NOT** exist in `attributes` or `relationships`. Deprecate these fields to remove this message.
 
       **Invalid Example:**
       ```yaml
@@ -748,12 +748,11 @@ rules:
     documentationUrl: https://jsonapi.org/format/1.1/#document-resource-object-fields
     message: Do not define id or type inside attributes or relationships.
     severity: error
-    given: "#AllContentSchemas..properties[attributes,relationships].properties"
+    given: "#AllContentSchemas..properties[attributes,relationships].properties[?(@.deprecated!=true)]~"
     then:
-      - field: id
-        function: falsy
-      - field: type
-        function: falsy
+      function: pattern
+      functionOptions:
+        notMatch: ^(id|type)$
   attributes-object-type:
     description: |-
       `attributes` property **MUST** be an `object`

@@ -512,9 +512,11 @@ declare const _default: {
             severity: DiagnosticSeverity;
             given: string;
             then: {
-                field: string;
-                function: _stoplight_spectral_core.RulesetFunctionWithValidator<unknown, null>;
-            }[];
+                function: _stoplight_spectral_core.RulesetFunctionWithValidator<string, _stoplight_spectral_functions.PatternOptions>;
+                functionOptions: {
+                    notMatch: string;
+                };
+            };
         };
         "attributes-object-type": {
             description: string;

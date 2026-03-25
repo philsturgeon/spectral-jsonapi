@@ -1003,17 +1003,13 @@ Related specification information can be found [here](https://jsonapi.org/format
       documentationUrl: "https://jsonapi.org/format/1.1/#document-resource-object-fields",
       message: "Do not define id or type inside attributes or relationships.",
       severity: DiagnosticSeverity.Error,
-      given: "#AllContentSchemas..properties[attributes,relationships].properties",
-      then: [
-        {
-          field: "id",
-          function: import_spectral_functions.falsy
-        },
-        {
-          field: "type",
-          function: import_spectral_functions.falsy
+      given: "#AllContentSchemas..properties[attributes,relationships].properties[?(@.deprecated!=true)]~",
+      then: {
+        function: import_spectral_functions.pattern,
+        functionOptions: {
+          notMatch: "^(id|type)$"
         }
-      ]
+      }
     },
     "attributes-object-type": {
       description: `\`attributes\` property **MUST** be an \`object\`

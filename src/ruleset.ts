@@ -945,17 +945,13 @@ Related specification information can be found [here](https://jsonapi.org/format
       message: "Do not define id or type inside attributes or relationships.",
       severity: DiagnosticSeverity.Error,
       given:
-        "#AllContentSchemas..properties[attributes,relationships].properties",
-      then: [
-        {
-          field: "id",
-          function: falsy,
+        "#AllContentSchemas..properties[attributes,relationships].properties[?(@.deprecated!=true)]~",
+      then: {
+        function: pattern,
+        functionOptions: {
+          notMatch: "^(id|type)$",
         },
-        {
-          field: "type",
-          function: falsy,
-        },
-      ],
+      },
     },
     "attributes-object-type": {
       description: `\`attributes\` property **MUST** be an \`object\`
