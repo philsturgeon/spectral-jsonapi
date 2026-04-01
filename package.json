@@ -1,6 +1,6 @@
 {
-  "name": "spectral-jsonapi",
-  "version": "2.0.0-dev",
+  "name": "@apisyouwonthate/spectral-jsonapi",
+  "version": "2.0.0",
   "description": "A Spectral ruleset for JSON:API, built as TypeScript.",
   "main": "dist/ruleset.js",
   "module": "dist/ruleset.mjs",
@@ -21,10 +21,9 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/philsturgeon/spectral-jsonapi.git"
+    "url": "git+https://github.com/apisyouwonthate/spectral-jsonapi.git"
   },
   "keywords": [
-    "style-guide",
     "api",
     "linting",
     "spectral",
@@ -32,7 +31,7 @@
     "ruleset",
     "jsonapi"
   ],
-  "author": "Phil Sturgeon (https://philsturgeon.com)",
+  "author": "Phil Sturgeon (https://apisyouwonthate.com)",
   "contributors": [
     "Jeff Marquez (https://www.linkedin.com/in/jeffmarquez)",
     "Ali Fazal (https://linkedin.com/in/ali-fazal-424904140)",
@@ -41,9 +40,9 @@
   ],
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/philsturgeon/spectral-jsonapi/issues"
+    "url": "https://github.com/apisyouwonthate/spectral-jsonapi/issues"
   },
-  "homepage": "https://github.com/philsturgeon/spectral-jsonapi#readme",
+  "homepage": "https://github.com/apisyouwonthate/spectral-jsonapi#readme",
   "dependencies": {
     "@stoplight/spectral-formats": "^1.8.2",
     "@stoplight/spectral-functions": "^1.10.1"

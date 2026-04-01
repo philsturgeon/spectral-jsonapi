@@ -1,10 +1,8 @@
 # Spectral JSON:API Ruleset
 
-![Node.js CI](https://github.com/philsturgeon/spectral-jsonapi/workflows/Node.js%20CI/badge.svg)
+![Node.js CI](https://github.com/apisyouwonthate/spectral-jsonapi/workflows/Node.js%20CI/badge.svg)
 
-Lint your OpenAPI against JSON:API guidance with a TypeScript-built Spectral ruleset.
-
-This ruleset turns JSON:API guidance into Spectral checks so teams can catch problems early in editors, CI, and pull requests.
+Automatically check if OpenAPI descriptions are compliant with JSON:API v1.1 using this Spectral ruleset so API teams can catch problems early in editors, CI, and pull requests.
 
 ## ⚡️ Quick Start
 
@@ -18,7 +16,7 @@ Create a local ruleset file:
 # .spectral.yaml
 extends:
 	- spectral:oas
-	- spectral-jsonapi
+	- "@apisyouwonthate/spectral-jsonapi"
 ```
 
 Lint your OpenAPI description:
@@ -37,7 +35,7 @@ Use this when the project already installs dependencies with npm.
 # .spectral.yaml
 extends:
 	- spectral:oas
-	- spectral-jsonapi
+	- "@apisyouwonthate/spectral-jsonapi"
 ```
 
 ### Use legacy YAML directly from GitHub
@@ -46,7 +44,7 @@ Use this when you want to consume the generated YAML ruleset without installing 
 
 ```yaml
 extends:
-	- "https://raw.githubusercontent.com/philsturgeon/spectral-jsonapi/refs/heads/main/.spectral.yml"
+	- "https://raw.githubusercontent.com/apisyouwonthate/spectral-jsonapi/refs/heads/main/.spectral.yml"
 ```
 
 Once you have the ruleset set up, you can run Spectral in the same directory as your `.spectral.yml` ruleset, and it will include the JSON:API rules in its check
@@ -55,11 +53,11 @@ Once you have the ruleset set up, you can run Spectral in the same directory as 
 spectral lint api/openapi.yaml
 ```
 
-This does not include `spectral:oas` rules, so if you want those as well, you can extend both:
+This does not include `spectral:oas` rules, so to get these add it to the `extend` list:
 
 ```yaml
 extends:
-  - "https://raw.githubusercontent.com/philsturgeon/spectral-jsonapi/refs/heads/main/.spectral.yml"
+  - "https://raw.githubusercontent.com/apisyouwonthate/spectral-jsonapi/refs/heads/main/.spectral.yml"
   - spectral:oas
 ```
 
