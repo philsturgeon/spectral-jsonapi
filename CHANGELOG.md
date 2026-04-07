@@ -1,3 +1,13 @@
+## 1.0.0 (2026-04-07)
+
+### Features
+
+* add fetching-resource-200 and fetching-resource-404 ([894bedf](https://github.com/apisyouwonthate/spectral-jsonapi/commit/894bedfe24d937b9d27e7c211c25ed3198a248c4))
+
+### Performance Improvements
+
+* remove redundant aliases ([e1db1ff](https://github.com/apisyouwonthate/spectral-jsonapi/commit/e1db1ffbd1e26066ad7578de6edc3e3738dc0583))
+
 # Changelog
 
 All notable changes to this project will be documented in this file.
