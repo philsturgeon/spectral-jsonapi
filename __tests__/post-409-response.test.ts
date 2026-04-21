@@ -9,7 +9,7 @@ describe("Rule post-409-response", () => {
     spectral = createWithRules(["post-409-response"]);
   });
 
-  it("invalid: 409 response does not define a source", async () => {
+  it("invalid: 409 response errors object does not define source", async () => {
     const document = {
       ...openApiBase,
       paths: {
@@ -23,7 +23,15 @@ describe("Rule post-409-response", () => {
                     schema: {
                       type: "object",
                       properties: {
-                        nonsense: {},
+                        errors: {
+                          type: "array",
+                          items: {
+                            type: "object",
+                            properties: {
+                              title: { type: "string" },
+                            },
+                          },
+                        },
                       },
                     },
                   },
@@ -38,7 +46,7 @@ describe("Rule post-409-response", () => {
     await expectRuleErrors(spectral, "post-409-response", document, [
       {
         message:
-          "POST 409 responses should include source to explain the conflict.",
+          "POST 409 error objects should include source to explain the conflict.",
         path: [
           "paths",
           "/articles",
@@ -49,13 +57,16 @@ describe("Rule post-409-response", () => {
           "application/vnd.api+json",
           "schema",
           "properties",
+          "errors",
+          "items",
+          "properties",
         ],
         severity: DiagnosticSeverity.Information,
       },
     ]);
   });
 
-  it("valid: JSON response shows source of conflict", async () => {
+  it("valid: 409 response errors object includes source", async () => {
     const document = {
       ...openApiBase,
       paths: {
@@ -69,12 +80,20 @@ describe("Rule post-409-response", () => {
                     schema: {
                       type: "object",
                       properties: {
-                        source: {
-                          type: "object",
-                          properties: {
-                            pointer: {
-                              type: "string",
-                              format: "json-pointer",
+                        errors: {
+                          type: "array",
+                          items: {
+                            type: "object",
+                            properties: {
+                              source: {
+                                type: "object",
+                                properties: {
+                                  pointer: {
+                                    type: "string",
+                                    format: "json-pointer",
+                                  },
+                                },
+                              },
                             },
                           },
                         },

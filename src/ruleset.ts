@@ -2362,10 +2362,10 @@ Related specification information can be found [here](https://jsonapi.org/format
       documentationUrl:
         "https://jsonapi.org/format/1.1/#crud-creating-responses",
       message:
-        "POST 409 responses should include source to explain the conflict.",
+        "POST 409 error objects should include source to explain the conflict.",
       severity: DiagnosticSeverity.Information,
       given:
-        "$.paths[*][post].responses[409].content['application/vnd.api+json'].schema.properties",
+        "$.paths[*][post].responses[409].content['application/vnd.api+json'].schema.properties.errors.items.properties",
       then: {
         field: "source",
         function: truthy,
@@ -2681,12 +2681,13 @@ Related specification information can be found [here](https://jsonapi.org/format
       documentationUrl:
         "https://jsonapi.org/format/1.1/#crud-updating-responses",
       message:
-        "PATCH 409 responses should include source to explain the conflict.",
+        "PATCH 409 error objects should include source to explain the conflict.",
       severity: DiagnosticSeverity.Information,
-      given: "$.paths[*][patch].responses",
+      given:
+        "$.paths[*][patch].responses[409].content['application/vnd.api+json'].schema.properties.errors.items.properties",
       then: {
-        field: "409",
-        function: falsy,
+        field: "source",
+        function: truthy,
       },
     },
     "delete-2xx-response-codes": {

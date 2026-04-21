@@ -9,7 +9,7 @@ describe("Rule patch-409-response", () => {
     spectral = createWithRules(["patch-409-response"]);
   });
 
-  it("patch includes explicit 409 response", async () => {
+  it("invalid: 409 response errors object does not define source", async () => {
     const document = {
       ...openApiBase,
       paths: {
@@ -35,6 +35,24 @@ describe("Rule patch-409-response", () => {
               },
               "409": {
                 description: "conflict",
+                content: {
+                  "application/vnd.api+json": {
+                    schema: {
+                      type: "object",
+                      properties: {
+                        errors: {
+                          type: "array",
+                          items: {
+                            type: "object",
+                            properties: {
+                              title: { type: "string" },
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
               },
             },
           },
@@ -45,14 +63,27 @@ describe("Rule patch-409-response", () => {
     await expectRuleErrors(spectral, "patch-409-response", document, [
       {
         message:
-          "PATCH 409 responses should include source to explain the conflict.",
-        path: ["paths", "/articles/{id}", "patch", "responses", "409"],
+          "PATCH 409 error objects should include source to explain the conflict.",
+        path: [
+          "paths",
+          "/articles/{id}",
+          "patch",
+          "responses",
+          "409",
+          "content",
+          "application/vnd.api+json",
+          "schema",
+          "properties",
+          "errors",
+          "items",
+          "properties",
+        ],
         severity: DiagnosticSeverity.Information,
       },
     ]);
   });
 
-  it("valid patch-409-response case", async () => {
+  it("valid: 409 response errors object includes source", async () => {
     const document = {
       ...openApiBase,
       paths: {
@@ -75,6 +106,38 @@ describe("Rule patch-409-response", () => {
             responses: {
               "200": {
                 description: "ok",
+              },
+              "409": {
+                description: "conflict",
+                content: {
+                  "application/vnd.api+json": {
+                    schema: {
+                      type: "object",
+                      properties: {
+                        errors: {
+                          type: "array",
+                          items: {
+                            type: "object",
+                            properties: {
+                              source: {
+                                type: "object",
+                                properties: {
+                                  pointer: {
+                                    type: "string",
+                                    format: "json-pointer",
+                                  },
+                                  parameter: {
+                                    type: "string",
+                                  },
+                                },
+                              },
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
               },
             },
           },
